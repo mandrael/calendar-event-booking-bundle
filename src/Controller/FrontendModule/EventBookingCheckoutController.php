@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Calendar Event Booking Bundle.
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -16,7 +16,6 @@ namespace Markocupic\CalendarEventBookingBundle\Controller\FrontendModule;
 
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
-use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Twig\FragmentTemplate;
@@ -55,10 +54,6 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
 {
     public const TYPE = 'event_booking_checkout';
 
-    private Adapter $memberModelAdapter;
-
-    private Adapter $messageAdapter;
-
     public function __construct(
         private readonly BookingValidator $bookingValidator,
         private readonly CartUtil $cartUtil,
@@ -74,8 +69,6 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
         #[Autowire('%markocupic_calendar_event_booking.checkout_step_parameter_name%')]
         private readonly string $stepParameterName,
     ) {
-        $this->memberModelAdapter = $this->framework->getAdapter(MemberModel::class);
-        $this->messageAdapter = $this->framework->getAdapter(Message::class);
     }
 
     /**
@@ -216,7 +209,7 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
                 'event' => $eventConfig->getModel()->row(),
                 'step' => $step,
                 'identifier' => $stepIdentifier,
-                'messages' => $this->messageAdapter->hasMessages() ? $this->messageAdapter->generate() : null,
+                'messages' => $this->framework->getAdapter(Message::class)->hasMessages() ? $this->framework->getAdapter(Message::class)->generate() : null,
                 'previousStepHref' => $this->checkoutUtil->getPreviousStepHref($stepIdentifier, $eventConfig, $request),
                 'nextStepHref' => $this->checkoutUtil->getNextStepHref($stepIdentifier, $eventConfig, $request),
             ],
@@ -317,13 +310,13 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
     {
         switch ($messageType) {
             case CheckoutEvent::TYPE_INFO:
-                $this->messageAdapter->addInfo($message);
+                $this->framework->getAdapter(Message::class)->addInfo($message);
                 break;
             case CheckoutEvent::TYPE_ERROR:
-                $this->messageAdapter->addError($message);
+                $this->framework->getAdapter(Message::class)->addError($message);
                 break;
             case CheckoutEvent::TYPE_CONFIRMATION:
-                $this->messageAdapter->addConfirmation($message);
+                $this->framework->getAdapter(Message::class)->addConfirmation($message);
                 break;
         }
     }
@@ -343,7 +336,7 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
 
         if ($user instanceof FrontendUser) {
             $template['hasLoggedInUser'] = true;
-            $template['getLoggedInUser'] = $this->memberModelAdapter->findById($user->id)->row();
+            $template['getLoggedInUser'] = $this->framework->getAdapter(MemberModel::class)->findById($user->id)->row();
         } else {
             $template['hasLoggedInUser'] = false;
         }

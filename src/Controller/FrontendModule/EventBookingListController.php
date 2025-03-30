@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Calendar Event Booking Bundle.
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -15,16 +15,15 @@ declare(strict_types=1);
 namespace Markocupic\CalendarEventBookingBundle\Controller\FrontendModule;
 
 use Contao\CalendarEventsModel;
-use Contao\Controller;
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
-use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\System;
 use Doctrine\DBAL\Exception;
 use Markocupic\CalendarEventBookingBundle\EventBooking\Config\EventConfig;
 use Markocupic\CalendarEventBookingBundle\EventBooking\Config\EventFactory;
@@ -40,19 +39,13 @@ class EventBookingListController extends AbstractFrontendModuleController
 
     public CalendarEventsModel|null $objEvent = null;
 
-    private Adapter $controllerAdapter;
-
-    private Adapter $stringUtilAdapter;
-
     public function __construct(
+        private readonly AddTemplateData $addTemplateData,
         private readonly ContaoFramework $framework,
-        private readonly ScopeMatcher $scopeMatcher,
         private readonly EventFactory $eventFactory,
         private readonly EventRegistration $eventRegistration,
-        private readonly AddTemplateData $addTemplateData,
+        private readonly ScopeMatcher $scopeMatcher,
     ) {
-        $this->controllerAdapter = $this->framework->getAdapter(Controller::class);
-        $this->stringUtilAdapter = $this->framework->getAdapter(StringUtil::class);
     }
 
     public function __invoke(Request $request, ModuleModel $model, string $section, array|null $classes = null, PageModel|null $page = null): Response
@@ -89,12 +82,12 @@ class EventBookingListController extends AbstractFrontendModuleController
     protected function getResponse(FragmentTemplate $template, ModuleModel $model, Request $request): Response
     {
         // Load language
-        $this->controllerAdapter->loadLanguageFile($this->eventRegistration->getTable());
+        $this->framework->getAdapter(System::class)->loadLanguageFile($this->eventRegistration->getTable());
 
         // Get the event configuration
         $eventConfig = $this->eventFactory->create($this->objEvent);
 
-        $arrAllowedStates = $this->stringUtilAdapter->deserialize($model->cebb_memberListAllowedBookingStates, true);
+        $arrAllowedStates = StringUtil::deserialize($model->cebb_memberListAllowedBookingStates, true);
         $arrOptions = [
             'order' => 'dateAdded ASC, firstname ASC, city ASC',
         ];

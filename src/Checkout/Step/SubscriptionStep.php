@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Calendar Event Booking Bundle.
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -17,7 +17,6 @@ namespace Markocupic\CalendarEventBookingBundle\Checkout\Step;
 use Contao\Config;
 use Contao\Controller;
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
-use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Date;
 use Contao\FormModel;
@@ -31,7 +30,6 @@ use Markocupic\CalendarEventBookingBundle\EventBooking\EventRegistration\EventRe
 use Markocupic\CalendarEventBookingBundle\EventBooking\Validator\BookingValidator;
 use Markocupic\CalendarEventBookingBundle\Util\CartUtil;
 use Markocupic\CalendarEventBookingBundle\Util\CheckoutUtil;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,18 +53,6 @@ class SubscriptionStep implements CheckoutStepInterface, ValidationCheckoutStepI
 
     private string $templatePath = '';
 
-    private Adapter $configAdapter;
-
-    private Adapter $controllerAdapter;
-
-    private Adapter $dateAdapter;
-
-    private Adapter $messageAdapter;
-
-    private Adapter $systemAdapter;
-
-    private Adapter $formModelAdapter;
-
     public function __construct(
         private readonly BookingValidator $bookingValidator,
         private readonly CartUtil $cartUtil,
@@ -76,15 +62,8 @@ class SubscriptionStep implements CheckoutStepInterface, ValidationCheckoutStepI
         private readonly ContaoFramework $framework,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly EventRegistration $eventRegistration,
-        private readonly Security $security,
         private readonly TranslatorInterface $translator,
     ) {
-        $this->configAdapter = $this->framework->getAdapter(Config::class);
-        $this->controllerAdapter = $this->framework->getAdapter(Controller::class);
-        $this->dateAdapter = $this->framework->getAdapter(Date::class);
-        $this->formModelAdapter = $this->framework->getAdapter(FormModel::class);
-        $this->messageAdapter = $this->framework->getAdapter(Message::class);
-        $this->systemAdapter = $this->framework->getAdapter(System::class);
     }
 
     public function initialize(EventConfig $eventConfig, Request $request): void
@@ -160,9 +139,9 @@ class SubscriptionStep implements CheckoutStepInterface, ValidationCheckoutStepI
     public function prepareStep(EventConfig $eventConfig, Request $request): array
     {
         $template = [];
-        $this->systemAdapter->loadLanguageFile($this->eventRegistration->getTable());
+        $this->framework->getAdapter(System::class)->loadLanguageFile($this->eventRegistration->getTable());
         $moduleModel = $this->checkoutUtil->getModuleModel($request);
-        $form = $this->formModelAdapter->findById($moduleModel->form);
+        $form = $this->framework->getAdapter(FormModel::class)->findById($moduleModel->form);
         $cart = $this->cartUtil->hasCart($request) ? $this->cartUtil->getCart($request) : null;
 
         if (null === $form) {
@@ -191,11 +170,11 @@ class SubscriptionStep implements CheckoutStepInterface, ValidationCheckoutStepI
          */
         if ($this->bookingValidator->validateCanRegister($eventConfig, $cart, $intendedSeats)) {
             $this->eventRegistration->setModuleData($moduleModel->row());
-            $template['form'] = $this->controllerAdapter->getForm($moduleModel->form);
+            $template['form'] = $this->framework->getAdapter(Controller::class)->getForm($moduleModel->form);
         }
 
         if ($this->cartUtil->countRegistrations($request) >= $eventConfig->get('maxItemsPerCart')) {
-            $this->messageAdapter->addInfo('Es können keine weitere Registrierungen gemacht werden.');
+            $this->framework->getAdapter(Message::class)->addInfo('Es können keine weitere Registrierungen gemacht werden.');
         }
 
         // Code below here will not be processed if the registration form has been
@@ -237,7 +216,7 @@ class SubscriptionStep implements CheckoutStepInterface, ValidationCheckoutStepI
             case self::CASE_BOOKING_NOT_YET_POSSIBLE:
                 $text = $this->translator->trans(
                     'MSC.'.$bookingAvailability,
-                    [$this->dateAdapter->parse($this->configAdapter->get('dateFormat'), $eventConfig->get('bookingStartDate'))],
+                    [$this->framework->getAdapter(Date::class)->parse($this->framework->getAdapter(Config::class)->get('dateFormat'), $eventConfig->get('bookingStartDate'))],
                     'contao_default',
                 );
                 break;

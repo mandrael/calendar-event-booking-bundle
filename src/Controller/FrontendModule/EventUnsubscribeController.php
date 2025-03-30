@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Calendar Event Booking Bundle.
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -20,7 +20,6 @@ use Contao\Controller;
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
-use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Twig\FragmentTemplate;
@@ -52,16 +51,6 @@ class EventUnsubscribeController extends AbstractFrontendModuleController
 
     protected array $errorMsg = [];
 
-    private Adapter $calendarEventsAdapter;
-
-    private Adapter $controllerAdapter;
-
-    private Adapter $registrationAdapter;
-
-    private Adapter $stringUtilAdapter;
-
-    private Adapter $systemAdapter;
-
     public function __construct(
         private EventRegistration $eventRegistration,
         private readonly AddTemplateData $addTemplateData,
@@ -75,11 +64,6 @@ class EventUnsubscribeController extends AbstractFrontendModuleController
         public readonly ScopeMatcher $scopeMatcher,
         public readonly TranslatorInterface $translator,
     ) {
-        $this->calendarEventsAdapter = $this->framework->getAdapter(CalendarEventsModel::class);
-        $this->controllerAdapter = $this->framework->getAdapter(Controller::class);
-        $this->registrationAdapter = $this->framework->getAdapter(CebbRegistrationModel::class);
-        $this->stringUtilAdapter = $this->framework->getAdapter(StringUtil::class);
-        $this->systemAdapter = $this->framework->getAdapter(System::class);
     }
 
     /**
@@ -103,7 +87,7 @@ class EventUnsubscribeController extends AbstractFrontendModuleController
                 }
 
                 if (!$this->hasError()) {
-                    $registration = $this->registrationAdapter->findOneByUuid($regUuid);
+                    $registration = $this->framework->getAdapter(CebbRegistrationModel::class)->findOneByUuid($regUuid);
                     if (null === $registration) {
                         $this->addError($translator->trans('ERR.invalid_registration_uuid', [], 'contao_default'));
                     }
@@ -157,7 +141,7 @@ class EventUnsubscribeController extends AbstractFrontendModuleController
                     // Unsubscribe, notify and redirect
                     if ('tl_unsubscribe_from_event' === $request->request->get('FORM_SUBMIT')) {
                         $regUuid = $request->query->get('regUuid', false);
-                        $registration = $this->registrationAdapter->findOneByUuid($regUuid);
+                        $registration = $this->framework->getAdapter(CebbRegistrationModel::class)->findOneByUuid($regUuid);
                         $eventConfig = $this->eventFactory->create($this->objEvent);
 
                         // Unsubscribe member
@@ -167,7 +151,7 @@ class EventUnsubscribeController extends AbstractFrontendModuleController
                         // Trigger the unsubscribe from event hook
                         if (isset($GLOBALS['TL_HOOKS'][AbstractHook::HOOK_UNSUBSCRIBE_FROM_EVENT]) && \is_array($GLOBALS['TL_HOOKS'][AbstractHook::HOOK_UNSUBSCRIBE_FROM_EVENT])) {
                             foreach ($GLOBALS['TL_HOOKS'][AbstractHook::HOOK_UNSUBSCRIBE_FROM_EVENT] as $callback) {
-                                $this->systemAdapter->importStatic($callback[0])->{$callback[1]}($eventConfig, $this->eventRegistration);
+                                $this->framework->getAdapter(System::class)->importStatic($callback[0])->{$callback[1]}($eventConfig, $this->eventRegistration);
                             }
                         }
 
@@ -185,7 +169,7 @@ class EventUnsubscribeController extends AbstractFrontendModuleController
 
                         $href = $this->uriSigner->sign($href);
 
-                        $this->controllerAdapter->redirect($href);
+                        $this->framework->getAdapter(Controller::class)->redirect($href);
                     }
                 }
             }
@@ -221,7 +205,7 @@ class EventUnsubscribeController extends AbstractFrontendModuleController
         }
 
         // Multiple notifications possible
-        $arrNotificationIds = $this->stringUtilAdapter->deserialize($eventConfig->get('eventUnsubscribeNotification'), true);
+        $arrNotificationIds = StringUtil::deserialize($eventConfig->get('eventUnsubscribeNotification'), true);
         $arrNotificationIds = array_map('intval', $arrNotificationIds);
 
         if (!empty($arrNotificationIds)) {
@@ -241,7 +225,7 @@ class EventUnsubscribeController extends AbstractFrontendModuleController
         if ($this->blnUnsubscribed) {
             $template->set('blnUnsubscribed', true);
 
-            if (null !== ($objEvent = $this->calendarEventsAdapter->findById($request->query->get('eid')))) {
+            if (null !== ($objEvent = $this->framework->getAdapter(CalendarEventsModel::class)->findById($request->query->get('eid')))) {
                 $eventConfig = $this->eventFactory->create($objEvent);
                 $template->set('event', $objEvent);
                 $template->set('eventConfig', $eventConfig);

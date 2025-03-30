@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Calendar Event Booking Bundle.
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\CalendarEventBookingBundle\EventListener\BookingFormSubmit;
 
+use Contao\Validator;
 use Doctrine\DBAL\Connection;
 use Markocupic\CalendarEventBookingBundle\Event\BookingFormSubmitEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -40,10 +41,10 @@ final class ValidateQuantityListener
 
         foreach ($arrRegs as $arrReg) {
             if (empty($arrReg['quantity'])) {
-                continue;
+                throw new \RuntimeException('Quantity is empty and must be set.');
             }
 
-            if ($arrReg['quantity'] !== (string) (int) $arrReg['quantity'] || (int) $arrReg['quantity'] < 1) {
+            if (!Validator::isNatural($arrReg['quantity']) || (int) $arrReg['quantity'] < 1) {
                 $form = $event->getForm();
                 $errorMsg = $this->translator->trans('MSC.enter_positive_integer', [], 'contao_default');
 

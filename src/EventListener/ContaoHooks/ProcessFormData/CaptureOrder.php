@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Calendar Event Booking Bundle.
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -60,6 +60,7 @@ final class CaptureOrder extends AbstractHook
      */
     public function __invoke(array $arrSubmitted, array $formData, array|null $files, array $labels, Form $form): void
     {
+
         if (empty($formData['isCalendarEventBookingForm'])) {
             return;
         }
@@ -74,7 +75,7 @@ final class CaptureOrder extends AbstractHook
 
         // Add more data to the record and check quantity
         foreach ($arrNew as $index => $dataCustomer) {
-            if (empty($dataCustomer['quantity']) || ((string) $dataCustomer['quantity'] !== (string) (int) $dataCustomer['quantity'])) {
+            if (empty($dataCustomer['quantity']) || ((string)$dataCustomer['quantity'] !== (string)(int)$dataCustomer['quantity'])) {
                 $arrNew[$index]['quantity'] = 1;
             }
 
@@ -112,7 +113,7 @@ final class CaptureOrder extends AbstractHook
             $arrNew[$index]['cartUuid'] = $cart->uuid;
         }
 
-        // Dispatch event E.g. add an error to the form object to prevent inserting
+        // Dispatch event e.g. add an error to the form object to prevent inserting
         // new registrations.
         $event = new BookingFormSubmitEvent($request, $form, $cart, $eventConfig, $arrExisting, $arrNew, $arrSubmitted);
 
@@ -162,7 +163,7 @@ final class CaptureOrder extends AbstractHook
         $hasDuplication = str_contains(implode('', array_keys($submittedData)), '_duplicate_');
 
         if ($hasDuplication) {
-            $keys = array_map(static fn ($key) => preg_replace('/_duplicate_([1-9]+)$/', '', $key), array_keys($submittedData));
+            $keys = array_map(static fn($key) => preg_replace('/_duplicate_([1-9]+)$/', '', $key), array_keys($submittedData));
             $keys = array_unique(array_filter($keys));
 
             $arrSubmittedData = $submittedData;
@@ -215,7 +216,7 @@ final class CaptureOrder extends AbstractHook
     protected function temporaryRegistration(array $arrRegistration, array $formData): CebbRegistrationModel
     {
         // Save original form data as a json encoded string
-        $formData = array_map(static fn ($value) => \is_string($value) ? mb_convert_encoding($value, 'UTF-8', 'UTF-8') : $value, $formData);
+        $formData = array_map(static fn($value) => \is_string($value) ? mb_convert_encoding($value, 'UTF-8', 'UTF-8') : $value, $formData);
         $arrRegistration['formData'] = serialize($formData);
 
         $registration = new CebbRegistrationModel();
