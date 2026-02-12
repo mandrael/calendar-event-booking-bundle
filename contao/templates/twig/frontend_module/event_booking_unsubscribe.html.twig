@@ -1,0 +1,40 @@
+{% trans_default_domain "mc_calendar_event_booking" %}
+{% extends "@Contao/frontend_module/_base.html.twig" %}
+{% use "@Contao_MarkocupicCalendarEventBookingBundle/component/_flash_message.html.twig" %}
+{% use "@Contao/component/_figure.html.twig" %}
+
+{% set searchable = false %}
+
+{% block content %}
+    {% block messages %}
+        {% if messages|default %}
+            {# Render the messages. #}
+            {% with {messages} only %}
+                {{ block('flash_message_component') }}
+            {% endwith %}
+        {% endif %}
+    {% endblock %}
+    {% if addImage|default %}
+        {# Render the event image #}
+        {% with {figure: figure} %}{{ block('figure_component') }}{% endwith %}
+    {% endif %}
+    {% block form %}
+        {% if hasForm|default %}
+            <div class="ceb-form--unsubscribe">
+                <form action="{{ app.request.getRequestUri() }}" id="{{ formId }}" method="post">
+                    <div class="formbody">
+                        <input type="hidden" name="FORM_SUBMIT" value="{{ formId }}">
+                        <input type="hidden" name="REQUEST_TOKEN" value="{{ requestToken }}">
+                        <p class="unsubscribe-confirm">
+                            {{ 'mod_unsubscribe.unsubscribe_confirm'|trans({'%firstname%': booking.firstname|default, '%lastname%': booking.lastname|default, '%title%': event.title})|raw }}
+                        </p>
+                        <div class="widget widget-submit unsubscribe-confirm-btn">
+                            <button type="submit" class="submit">{{ 'mod_unsubscribe.unsubscribe_btn_label'|trans }}</button>
+                        </div>
+                        <p class="stop-unsubscription"><a href="{{ app.request.getSchemeAndHttpHost() }}">{{ 'mod_unsubscribe.stop_unsubscription_btn_label'|trans }}</a></p>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    {% endblock %}
+{% endblock %}

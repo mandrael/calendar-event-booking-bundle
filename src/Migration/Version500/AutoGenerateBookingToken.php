@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Calendar Event Booking Bundle.
+ * This file is part of the Calendar Event Booking Bundle.
  *
  * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
@@ -22,16 +22,11 @@ use Ramsey\Uuid\Uuid;
 
 class AutoGenerateBookingToken extends AbstractMigration
 {
-    private const MIGRATION_TEXT = "Auto generate missing booking tokens in data table 'tl_cebb_registration'.";
+    private const MIGRATION_TEXT = "Auto generate missing booking tokens in data table 'tl_calendar_events_member'.";
 
     public function __construct(
         private readonly Connection $connection,
     ) {
-    }
-
-    public function getName(): string
-    {
-        return 'Calendar Event Booking Bundle Version 5 update: Auto generate missing booking tokens in data table "tl_cebb_registration"';
     }
 
     /**
@@ -44,12 +39,12 @@ class AutoGenerateBookingToken extends AbstractMigration
         $schemaManager = $this->connection->createSchemaManager();
 
         // If the database table itself does not exist we should do nothing
-        if ($schemaManager->tablesExist(['tl_cebb_registration'])) {
-            $columns = $schemaManager->listTableColumns('tl_cebb_registration');
+        if ($schemaManager->tablesExist(['tl_calendar_events_member'])) {
+            $columns = $schemaManager->listTableColumns('tl_calendar_events_member');
 
             if (isset($columns['bookingtoken'])) {
                 $count = $this->connection->fetchOne(
-                    'SELECT COUNT(id) FROM tl_cebb_registration WHERE bookingToken = ?',
+                    'SELECT COUNT(id) FROM tl_calendar_events_member WHERE bookingToken = ?',
                     [''],
                 );
 
@@ -68,7 +63,7 @@ class AutoGenerateBookingToken extends AbstractMigration
     public function run(): MigrationResult
     {
         $arrIds = $this->connection->fetchFirstColumn(
-            'SELECT id FROM tl_cebb_registration WHERE bookingToken = ?',
+            'SELECT id FROM tl_calendar_events_member WHERE bookingToken = ?',
             [''],
         );
 
@@ -76,7 +71,7 @@ class AutoGenerateBookingToken extends AbstractMigration
             foreach ($arrIds as $id) {
                 $bookingToken = Uuid::uuid4()->toString();
                 $set = ['bookingToken' => $bookingToken];
-                $this->connection->update('tl_cebb_registration', $set, ['id' => $id]);
+                $this->connection->update('tl_calendar_events_member', $set, ['id' => $id]);
             }
         }
 

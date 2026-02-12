@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Calendar Event Booking Bundle.
+ * This file is part of the Calendar Event Booking Bundle.
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -19,11 +19,9 @@ use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
-use Contao\ManagerPlugin\Config\ConfigPluginInterface;
 use Markocupic\CalendarEventBookingBundle\MarkocupicCalendarEventBookingBundle;
-use Symfony\Component\Config\Loader\LoaderInterface;
 
-class Plugin implements ConfigPluginInterface, BundlePluginInterface
+class Plugin implements BundlePluginInterface
 {
     public function getBundles(ParserInterface $parser): array
     {
@@ -34,10 +32,5 @@ class Plugin implements ConfigPluginInterface, BundlePluginInterface
                     ContaoCalendarBundle::class,
                 ]),
         ];
-    }
-
-    public function registerContainerConfiguration(LoaderInterface $loader, array $config): void
-    {
-        $loader->load('@MarkocupicCalendarEventBookingBundle/config/config.yaml');
     }
 }

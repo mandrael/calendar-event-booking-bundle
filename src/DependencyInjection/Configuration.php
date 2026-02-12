@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Calendar Event Booking Bundle.
+ * This file is part of the Calendar Event Booking Bundle.
  *
  * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
@@ -28,49 +28,75 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
-                ->scalarNode('checkout_temp_locking_time')
-                    ->info('Here you can set how long (in seconds) a booking is blocked if the booking process has not been completed correctly.')
-                    ->defaultValue(60 * 60)->cannotBeEmpty()
+                ->booleanNode('auto_expire_reserved_bookings')
+                    ->info('If set to true, unconfirmed bookings are expired after a configurable time has elapsed.')
+                    ->defaultTrue()
                 ->end()
-                ->scalarNode('checkout_step_parameter_name')
-                    ->defaultValue('action')
-                    ->cannotBeEmpty()
+                ->integerNode('auto_expire_time_limit')
+                    ->info('The time in seconds Contao should wait until an unconfirmed booking is automatically expired by a cronjob.')
+                    ->defaultValue(3600)
                 ->end()
-                ->scalarNode('checkout_manager_factory')
-                    ->cannotBeEmpty()
+                ->booleanNode('auto_delete_expired_bookings')
+                    ->info('If set to true, expired bookings are deleted from the database automatically by a cronjob.')
+                    ->defaultFalse()
                 ->end()
-                ->arrayNode('checkout')
-                    ->useAttributeAsKey('name')
-                    ->arrayPrototype()
-                        ->children()
-                            ->arrayNode('steps')
-                                ->useAttributeAsKey('name')
-                                ->arrayPrototype()
-                                    ->children()
-                                        ->scalarNode('step')
-                                            ->info('The FQDN to the step service.')
-                                            ->example('Markocupic\CalendarEventBookingBundle\Checkout\Step\SubscriptionStep')
-                                        ->end()
-                                        ->integerNode('priority')
-                                            ->info('Set an integer for the step priority. The step with the higher priority is called first.')
-                                            ->example('100')
-                                            ->defaultValue(0)
-                                        ->end()
-                                        ->scalarNode('template')
-                                            ->info('Set the path for the view.')
-                                            ->example('@App/Checkout/Step/customer.html.twig')
-                                        ->end()
-                                    ->end()
+                ->booleanNode('auto_delete_canceled_bookings')
+                    ->info('If set to true, canceled bookings are deleted from the database automatically by a cronjob.')
+                    ->defaultFalse()
+                ->end()
+                ->booleanNode('auto_waiting_list_promotion')
+                    ->info('If set to false, the automatic advancement from waiting list will be disabled.')
+                    ->defaultTrue()
+                ->end()
+                ->append($this->addNotificationNode())
+                ->append($this->addRateLimitNode())
+                ->append($this->addMemberListNode())
+             ->end()
+        ;
+
+        return $treeBuilder;
+    }
+
+    private function addNotificationNode(): NodeDefinition
+    {
+        return (new TreeBuilder('notification'))
+            ->getRootNode()
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->arrayNode('log')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('exclude')
+                            ->scalarPrototype()
+                                ->validate()
+                                    ->ifTrue(static fn ($v) => !\is_string($v))
+                                    ->thenInvalid('Each option must be a string.')
                                 ->end()
                             ->end()
                         ->end()
                     ->end()
                 ->end()
-                ->append($this->addMemberListNode())
             ->end()
         ;
+    }
 
-        return $treeBuilder;
+    private function addRateLimitNode(): NodeDefinition
+    {
+        return (new TreeBuilder('rate_limit'))
+            ->getRootNode()
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->arrayNode('event_booking_form')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('enable')->defaultTrue()->end()
+                        ->scalarNode('policy')->cannotBeEmpty()->defaultValue('fixed_window')->end()
+                        ->integerNode('limit')->defaultValue(5)->end()
+                        ->scalarNode('interval')->cannotBeEmpty()->defaultValue('15 minutes')->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
     }
 
     private function addMemberListNode(): NodeDefinition

@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.1">
-  <file datatype="php" original="vendor/markocupic/calendar-event-booking-bundle/contao/languages/en/tl_nc_notification.php" source-language="en" target-language="de">
+  <file datatype="php" original="contao/languages/en/tl_nc_notification.php" source-language="en" target-language="de">
     <body>
-      <trans-unit id="tl_nc_notification.type.calendar-event-booking-bundle">
-        <source>Event-Booking</source>
-        <target>Event Buchungen</target>
+      <trans-unit id="tl_nc_notification.type.event-booking-notification">
+        <source>Event booking: Notification after submitting the event booking form</source>
+        <target>Event Buchung: Benachrichtigung nach dem Absenden des Event-Buchungs-Formulars</target>
       </trans-unit>
-      <trans-unit id="tl_nc_notification.type.event-booking-notification.0">
-        <source>Event booking notification</source>
-        <target>Benachrichtigung bei Event Buchung</target>
+      <trans-unit id="tl_nc_notification.type.event-booking-opt-in-invitation-notification">
+        <source>Event booking: Double-Opt-In invitation notification</source>
+        <target>Event Buchung: Opt-In Einladungsbenachrichtigung</target>
       </trans-unit>
-      <trans-unit id="tl_nc_notification.type.event-unsubscribe-notification.0">
-        <source>Event unsubscribe notification</source>
-        <target>Benachrichtigung bei Event Stornierung</target>
+      <trans-unit id="tl_nc_notification.type.event-booking-opt-in-success-notification">
+        <source>Event booking: Notification after consent (Double-Opt-In)</source>
+        <target>Event Buchung: Benachrichtigung nach Einwilligung (Double-Opt-In Succes)</target>
+      </trans-unit>
+      <trans-unit id="tl_nc_notification.type.event-unsubscribe-notification">
+        <source>Event booking: Notification after event cancellation</source>
+        <target>Event Buchung: Benachrichtigung nach der Event-Stornierung</target>
+      </trans-unit>
+      <trans-unit id="tl_nc_notification.type.waiting-list-advancement-notification">
+        <source>Event booking: Notification after moving up from the waiting list</source>
+        <target>Event Buchung: Benachrichtigung nach dem Nachrücken von der Warteliste</target>
+      </trans-unit>
+      <trans-unit id="tl_nc_notification.type.event-booking-payment-success-notification">
+        <source>Event booking: Notification on payment success</source>
+        <target>Event Buchung: Benachrichtigung nach erfolgreicher Zahlung</target>
       </trans-unit>
     </body>
   </file>

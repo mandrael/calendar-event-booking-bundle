@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Calendar Event Booking Bundle.
+ * This file is part of the Calendar Event Booking Bundle.
  *
  * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
@@ -12,22 +12,16 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/calendar-event-booking-bundle
  */
 
-use Markocupic\CalendarEventBookingBundle\Model\CebbCartModel;
-use Markocupic\CalendarEventBookingBundle\Model\CebbOrderModel;
-use Markocupic\CalendarEventBookingBundle\Model\CebbPaymentModel;
-use Markocupic\CalendarEventBookingBundle\Model\CebbRegistrationModel;
+use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsBookingNotificationModel;
+use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsMemberModel;
+use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsPaymentModel;
 
-/*
- * Backend modules
- */
-$GLOBALS['BE_MOD']['content']['calendar']['tables'][] = 'tl_cebb_registration';
-$GLOBALS['BE_MOD']['content']['calendar']['tables'][] = 'tl_cebb_order';
-$GLOBALS['BE_MOD']['content']['calendar']['tables'][] = 'tl_cebb_cart';
-$GLOBALS['BE_MOD']['content']['calendar']['tables'][] = 'tl_cebb_payment';
-/*
- * Contao models
- */
-$GLOBALS['TL_MODELS']['tl_cebb_cart'] = CebbCartModel::class;
-$GLOBALS['TL_MODELS']['tl_cebb_order'] = CebbOrderModel::class;
-$GLOBALS['TL_MODELS']['tl_cebb_payment'] = CebbPaymentModel::class;
-$GLOBALS['TL_MODELS']['tl_cebb_registration'] = CebbRegistrationModel::class;
+// Add child tables to the calendar module
+$GLOBALS['BE_MOD']['content']['calendar']['tables'][] = CalendarEventsMemberModel::getTable();
+$GLOBALS['BE_MOD']['content']['calendar']['tables'][] = CalendarEventsPaymentModel::getTable();
+$GLOBALS['BE_MOD']['content']['calendar']['tables'][] = CalendarEventsBookingNotificationModel::getTable();
+
+// Register custom models
+$GLOBALS['TL_MODELS']['tl_calendar_events_member'] = CalendarEventsMemberModel::class;
+$GLOBALS['TL_MODELS']['tl_calendar_events_payment'] = CalendarEventsPaymentModel::class;
+$GLOBALS['TL_MODELS']['tl_calendar_events_booking_notification'] = CalendarEventsBookingNotificationModel::class;

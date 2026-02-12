@@ -1,24 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.1">
-  <file datatype="php" original="vendor/markocupic/calendar-event-booking-bundle/contao/languages/en/tl_calendar.php" source-language="en">
+  <file datatype="php" original="contao/languages/en/tl_calendar.php" source-language="en">
     <body>
-      <trans-unit id="tl_calendar.event_unsubscribe_legend">
-        <source>Event unsubscription</source>
+      <trans-unit id="tl_calendar.event_booking_legend">
+        <source>Event booking settings</source>
       </trans-unit>
-      <trans-unit id="tl_calendar.booking_options_legend">
-        <source>Booking options</source>
+      <trans-unit id="tl_calendar.event_booking_notification_legend">
+        <source>Event booking notifications</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.emailUnique.0">
+        <source>Enable multiple bookings with same email address</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.emailUnique.1">
+        <source>Please choose if multiple bookings with same email address should be allowed.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.requireOptIn.0">
+        <source>Confirmation of booking required (Double Opt-In)</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.requireOptIn.1">
+        <source>Only confirmed bookings are counted towards the number of participants. Unconfirmed bookings automatically receive the status ‘expired’ after a configurable deadline has expired.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.eventBookingCheckoutPage.0">
+        <source>Event booking checkout page</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.eventBookingCheckoutPage.1">
+        <source>Please select the page with the event booking checkout module.</source>
       </trans-unit>
       <trans-unit id="tl_calendar.eventUnsubscribePage.0">
-        <source>Page containing the event unsubscription module</source>
+        <source>Event booking unsubscription page</source>
       </trans-unit>
       <trans-unit id="tl_calendar.eventUnsubscribePage.1">
-        <source>Please choose the page to which users are redirected when clicking the unsubscription link</source>
+        <source>Please select the page with the event booking unsubscription module.</source>
       </trans-unit>
-      <trans-unit id="tl_calendar.calculateTotalFrom.0">
-        <source>Calculate total from</source>
+      <trans-unit id="tl_calendar.eventBookingOptInPage.0">
+        <source>Event booking confirm page (Double-Opt-In)</source>
       </trans-unit>
-      <trans-unit id="tl_calendar.calculateTotalFrom.1">
-        <source>Only registrations with the selected states will be counted to the total.</source>
+      <trans-unit id="tl_calendar.eventBookingOptInPage.1">
+        <source>Please select the page with the event booking confirm module.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.eventBookingCheckoutHandler.0">
+        <source>Checkout type.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.eventBookingCheckoutHandler.1">
+        <source>Select the checkout type.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.subscribeNotification.0">
+        <source>Notification after booking form submit</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.subscribeNotification.1">
+        <source>Select a message (Notification Centre) to be sent after submitting the booking form.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.paymentSuccessNotification.0">
+        <source>Notification after payment success</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.paymentSuccessNotification.1">
+        <source>Select a message (Notification Centre) to be sent on payment success.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.waitingListAdvancementNotification.0">
+        <source>Advancement from waiting list notification</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.waitingListAdvancementNotification.1">
+        <source>This notification will be sent when a participant is moved from the waiting list to the regular list of active bookings.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.optInInvitationNotification.0">
+        <source>Opt-In invitation notification</source>
+        <target>Opt-In Einladungsbenachrichtigung</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.optInInvitationNotification.1">
+        <source>Please select an opt-in notification that will be sent after submitting the registration form for the event.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.optInSuccessNotification.0">
+        <source>Notification after consent (opt-in success)</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.optInSuccessNotification.1">
+        <source>Please select a notification that will be sent after the customer has agreed to register for the event via the link.</source>
+        <target>Bitte wählen Sie eine Benachrichtigung aus, die versendet wird, nachdem der Kunde via Link der Anmeldung zum Event zugestimmt hat.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.unsubscribeNotification.0">
+        <source>Event unsubscribe notification</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.unsubscribeNotification.1">
+        <source>Please choose an event unsubscribe notification.</source>
       </trans-unit>
     </body>
   </file>

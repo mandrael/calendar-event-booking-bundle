@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Calendar Event Booking Bundle.
+ * This file is part of the Calendar Event Booking Bundle.
  *
  * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
@@ -14,12 +14,15 @@ declare(strict_types=1);
 
 namespace Markocupic\CalendarEventBookingBundle\NotificationType;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Terminal42\NotificationCenterBundle\NotificationType\NotificationTypeInterface;
 use Terminal42\NotificationCenterBundle\Token\Definition\EmailTokenDefinition;
 use Terminal42\NotificationCenterBundle\Token\Definition\Factory\TokenDefinitionFactoryInterface;
+use Terminal42\NotificationCenterBundle\Token\Definition\FileTokenDefinition;
 use Terminal42\NotificationCenterBundle\Token\Definition\TextTokenDefinition;
 
-class EventUnsubscribeNotificationType implements NotificationTypeInterface
+#[AutoconfigureTag('cebb.notification')]
+class EventUnsubscribeNotificationType implements NotificationTypeInterface, CalendarEventsBookingNotificationTypeInterface
 {
     public const NAME = 'event-unsubscribe-notification';
 
@@ -33,16 +36,30 @@ class EventUnsubscribeNotificationType implements NotificationTypeInterface
         return self::NAME;
     }
 
+    public static function getType(): string
+    {
+        return self::NAME;
+    }
+
+    /**
+     * This makes the tokens available to the auto suggester in the notification
+     * center. Setting the HTML tokens is not necessary! It even prevents the
+     * auto-suggest feature from working properly.
+     */
     public function getTokenDefinitions(): array
     {
         $tokenDefinitions = [];
 
-        foreach ($this->getTokenConfig()['text_token'] as $token) {
-            $tokenDefinitions[] = $this->factory->create(TextTokenDefinition::class, $token, 'event_unsubscribe.'.$token);
+        foreach ($this->getTokenConfig()['email_token'] ?? [] as $token) {
+            $tokenDefinitions[] = $this->factory->create(EmailTokenDefinition::class, $token, 'event_booking.'.$token);
         }
 
-        foreach ($this->getTokenConfig()['email_token'] as $token) {
-            $tokenDefinitions[] = $this->factory->create(EmailTokenDefinition::class, $token, 'event_unsubscribe.'.$token);
+        foreach ($this->getTokenConfig()['text_token'] ?? [] as $token) {
+            $tokenDefinitions[] = $this->factory->create(TextTokenDefinition::class, $token, 'event_booking.'.$token);
+        }
+
+        foreach ($this->getTokenConfig()['file_token'] ?? [] as $token) {
+            $tokenDefinitions[] = $this->factory->create(FileTokenDefinition::class, $token, 'event_booking.'.$token);
         }
 
         return $tokenDefinitions;
@@ -50,28 +67,6 @@ class EventUnsubscribeNotificationType implements NotificationTypeInterface
 
     private function getTokenConfig(): array
     {
-        return [
-            'email_token' => [
-                'sender_email',
-                'member_email',
-                'admin_email',
-            ],
-            'text_token' => [
-                'event_*',
-                'event_title',
-                'event_unsubscribeLimitTstamp',
-                'member_*',
-                'member_dateOfBirth',
-                'member_salutation',
-                'member_cancelRegistrationUrl',
-                'member_cancelOrderUrl',
-                'order_uuid',
-                'order_*',
-                'sender_*',
-                'sender_name',
-                'sender_email',
-                'admin_email',
-            ],
-        ];
+        return DefaultTokenConfig::getDefaultTokenConfig();
     }
 }

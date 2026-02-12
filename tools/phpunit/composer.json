@@ -1,16 +1,13 @@
 {
     "require": {
-        "phpunit/phpunit": "^9.5",
-        "contao/test-case": "^4.0",
-        "contao/core-bundle": "^4.13",
-        "contao/calendar-bundle": "^4.13",
-        "contao/manager-bundle": "^4.13"
+        "contao/core-bundle": "^5.6",
+        "phpunit/phpunit": "^11.5",
+        "contao/test-case": "^5.6"
     },
     "config": {
         "allow-plugins": {
-            "contao-components/installer": false,
-            "contao/manager-plugin": false,
-            "contao-community-alliance/composer-plugin": true
+            "contao-components/installer": true,
+            "php-http/discovery": true
         }
     }
 }

@@ -1,46 +1,9 @@
-/** tl_calendar_events Show subscription state **/
-
-@keyframes blinker {
-    50% {
-        opacity: 0;
-    }
-}
-
-.subscription-badge {
-    background-color: darkgray;
-    font-size: x-small;
-    border-radius: 5px;
-    padding: 3px 8px;
-    margin-left: 10px;
-    cursor: pointer;
-    color: #fff;
-}
-
-.subscription-badge.not-confirmed {
-    background-color: darkgray;
-    animation: blinker 2s step-start infinite;
-}
-
-.subscription-badge.confirmed {
-    background-color: darkgreen;
-}
-
-.subscription-badge.waiting-list {
-    background-color: darkblue;
-}
-
-.subscription-badge.rejected {
-    background-color: darkred;
-}
-
-.subscription-badge.unsubscribed {
-    background-color: darkorange;
-}
-
-.subscription-badge.waiting-for-payment {
-    background-color: #e75709;
-}
-
-.override_event > .tl_checkbox_single_container > label, .override_event h3 > label:not(.error) {
-    color: darkorange;
+#tl_buttons .header_icon.download_event_bookings {
+    background-color: transparent;
+    background-position: 0;
+    background-repeat: no-repeat;
+    border: none;
+    display: inline-block;
+    margin-left: 15px;
+    padding: 3px 0 3px 22px;
 }

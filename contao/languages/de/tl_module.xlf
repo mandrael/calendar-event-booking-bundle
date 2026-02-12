@@ -1,43 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.1">
-  <file datatype="php" original="vendor/markocupic/calendar-event-booking-bundle/contao/languages/en/tl_module.php" source-language="en" target-language="de">
+  <file datatype="php" original="contao/languages/en/tl_module.php" source-language="en" target-language="de">
     <body>
       <trans-unit id="tl_module.form_legend">
-        <source>Booking form</source>
-        <target>Event-Buchungsformular</target>
+        <source>Booking form settings</source>
+        <target>Event-Buchungsformular Einstellungen</target>
       </trans-unit>
-      <trans-unit id="tl_module.notification_legend">
-        <source>Notification</source>
-        <target>Benachrichtigung</target>
+      <trans-unit id="tl_module.ceb_modMemberList_enableBookingStatusFilter.0">
+        <source>Enable the booking status filter</source>
+        <target>Buchungsstatus-Filter aktivieren</target>
       </trans-unit>
-      <trans-unit id="tl_module.checkout_legend">
-        <source>Checkout</source>
-        <target>Checkout</target>
+      <trans-unit id="tl_module.ceb_modMemberList_enableBookingStatusFilter.1">
+        <source>Here you can choose whether to apply the booking status filter.</source>
+        <target>Hier können Sie auswählen, ob der Buchungsstatus-Filter angewendet werden soll.</target>
       </trans-unit>
-      <trans-unit id="tl_module.cebb_memberListAllowedBookingStates.0">
-        <source>Allowed booking states</source>
-        <target>Zur Anzeige freigegeben Buchungen</target>
+      <trans-unit id="tl_module.ceb_modMemberList_bookingStatusFilter.0">
+        <source>Booking status filter</source>
+        <target>Buchungsstatus-Filter</target>
       </trans-unit>
-      <trans-unit id="tl_module.cebb_memberListAllowedBookingStates.1">
-        <source>Please choose the allowed booking states.</source>
-        <target>Bitte wählen Sie aus, welche Buchungen angezeigt werden sollen.</target>
+      <trans-unit id="tl_module.ceb_modMemberList_bookingStatusFilter.1">
+        <source>Select which bookings you want to display. If you leave the filter blank, all bookings will be displayed.</source>
+        <target>Wählen Sie aus, welche Buchungen angezeigt werden sollen. Wenn Sie den Filter leer lassen, werden alle Buchungen angezeigt.</target>
       </trans-unit>
-      <trans-unit id="tl_module.cebb_jumpToOnCheckoutCompletion.0">
-        <source>Jump to page on checkout completion</source>
-        <target>Weiterleitungsseite nach Buchungsabschluss</target>
+      <trans-unit id="tl_module.ceb_modMemberList_sorting.0">
+        <source>Sorting</source>
+        <target>Sortierung</target>
       </trans-unit>
-      <trans-unit id="tl_module.cebb_jumpToOnCheckoutCompletion.1">
-        <source>Select a page to which the user will be redirected after completing the checkout.</source>
-        <target>Wählen Sie eine Seite aus, auf die der Benutzer nach Abschluss der Kaufabwicklung weitergeleitet wird.</target>
+      <trans-unit id="tl_module.ceb_modMemberList_sorting.1">
+        <source>Select the field by which the entries are to be sorted.</source>
+        <target>Wählen Sie das Feld aus, nach dem die Einträge sortiert werden sollen.</target>
       </trans-unit>
-      <trans-unit id="tl_module.cebb_checkoutType.0">
-        <source>Checkout system</source>
-        <target>Checkout-System</target>
+      <trans-unit id="tl_module.ceb_modMyBookings_startTimeFilter.0">
+        <source>Output filter</source>
+        <target>Ausgabe Filter</target>
       </trans-unit>
-      <trans-unit id="tl_module.cebb_checkoutType.1">
-        <source>Please select a checkout system.</source>
-        <target>Wählen Sie das Checkout-System aus.</target>
+      <trans-unit id="tl_module.ceb_modMyBookings_startTimeFilter.1">
+        <source>Select which bookings you want to display.</source>
+        <target>Wählen Sie aus, welche Buchungen Sie angezeigt haben möchten.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ceb_modMyBookings_sorting.0">
+        <source>Sort direction</source>
+        <target>Sortierrichtung</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ceb_modMyBookings_sorting.1">
+        <source>Select the sort direction.</source>
+        <target>Wählen Sie die Sortierrichtung aus.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ceb_modCheckout_handler.0">
+        <source>Checkout type.</source>
+        <target>Checkout-Typ</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ceb_modCheckout_handler.1">
+        <source>Select the checkout type. Don’t forget to update the template afterwards.</source>
+        <target>Wählen Sie den Checkout-Typ aus. Bitte vergessen Sie nicht danach auch das Template umzustellen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ceb_addImage.0">
+        <source>Display event preview image</source>
+        <target>Event-Vorschaubild anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ceb_addImage.1">
+        <source>Whether to display the event preview image</source>
+        <target>Soll das Event-Vorschaubild angezeigt werden.</target>
       </trans-unit>
     </body>
   </file>
 </xliff>
+
+

@@ -1,0 +1,54 @@
+{% trans_default_domain "mc_calendar_event_booking" %}
+{% extends "@Contao/frontend_module/_base.html.twig" %}
+{% use "@Contao_MarkocupicCalendarEventBookingBundle/component/_flash_message.html.twig" %}
+
+{% set searchable = false %}
+
+{% block content %}
+    {% block messages %}
+        {% if messages|default %}
+            <div class="ceb-form--messages">
+                {# Render the messages. #}
+                {% with {messages} only %}
+                    {{ block('flash_message_component') }}
+                {% endwith %}
+            </div>
+        {% endif %}
+    {% endblock %}
+    {% set event_data = event.row() %}
+    {# Some examples of how the built-in Twig variables can be used: #}
+    {# Booking statuses: booking_open, fully_booked, waiting_list_open, not_bookable, not_yet_bookable, booking_closed #}
+    {#
+    {% if eventStatus == 'waiting_list_open' %}
+       <div>Here comes an important message!</div>
+    {% endif %}
+    {% if eventStatus == 'booking_open' %}
+       <div>Here comes an important message!</div>
+    {% endif %}
+    <ul>
+        <li>{{ 'mod_form.form.event_status'|trans }}: {{ ('mod_form.event_status.'~eventStatus)|trans }}</li>
+        <li>{{ 'mod_form.form.logged_in_user'|trans }}: {{ hasLoggedInUser ? loggedInUser.firstname ~ ' ' ~ loggedInUser.lastname : '---' }}</li>
+        <li>{{ 'mod_form.form.event_name'|trans }}: {{ event_data.title }}</li>
+        <li>{{ 'mod_form.form.event_start_date'|trans }}: {{ event_data.startDate|date(page.dateFormat) }}</li>
+        <li>{{ 'mod_form.form.booking_start_date'|trans }}: {{ event_data.bookingStartDate|date(page.dateFormat) }}</li>
+        <li>{{ 'mod_form.form.booking_end_date'|trans }}: {{ event_data.bookingEndDate|date(page.dateFormat) }}</li>
+        <li>{{ 'mod_form.form.booking_end_date'|trans }}: {{ canRegister ? 'Yes' : 'No' }}</li>
+        <li>{{ 'mod_form.form.is_fully_booked'|trans }}: {{ isFullyBooked ? 'Yes' : 'No' }}</li>
+        <li>{{ 'mod_form.form.is_waiting_list_open'|trans }}: {{ waitingListOpen ? 'Yes' : 'No' }}</li>
+        <li>{{ 'mod_form.form.booking_count'|trans }}: {{ bookingCount }}x</li>
+        <li>{{ 'mod_form.form.free_spots_count'|trans }}: {{ freeSpotsCount }}x</li>
+    </ul>
+    #}
+    {% block event_status_text %}
+        {% if eventStatusText|default %}
+            <div class="booking-status-text {{ eventStatus }}">
+                {{ eventStatusText|raw }}
+            </div>
+        {% endif %}
+    {% endblock %}
+    {% block form %}
+        {% if form_markup|default %}
+            {{ form_markup|raw }}
+        {% endif %}
+    {% endblock %}
+{% endblock %}

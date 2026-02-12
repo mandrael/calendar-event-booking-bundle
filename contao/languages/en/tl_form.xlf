@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.1">
-  <file datatype="php" original="vendor/markocupic/calendar-event-booking-bundle/contao/languages/en/tl_form.php" source-language="en">
+  <file datatype="php" original="contao/languages/en/tl_form.php" source-language="en">
     <body>
       <trans-unit id="tl_form.calendar_event_booking_settings">
-        <source>Event booking form settings</source>
+        <source>Event bookiung form settings</source>
       </trans-unit>
       <trans-unit id="tl_form.isCalendarEventBookingForm.0">
         <source>Activate event booking form functionality</source>

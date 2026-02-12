@@ -6,4 +6,4 @@ cd..
 cd..
 cd..
 cd..
-php -d memory_limit=-1 vendor/bin/phpstan analyse vendor/markocupic/calendar-event-booking-bundle/src vendor/markocupic/calendar-event-booking-bundle/tests
+php -d memory_limit=-1 vendor/bin/phpstan analyse vendor/markocupic/calendar-event-booking-bundle/src --level 1

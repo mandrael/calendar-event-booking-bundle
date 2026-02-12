@@ -1,16 +1,22 @@
 {
     "require": {
-        "phpstan/phpstan": "^1.10",
-        "contao/test-case": "^4.13",
-        "contao/core-bundle": "^4.13",
-        "contao/calendar-bundle": "^4.13",
-        "contao/manager-bundle": "^4.13"
+        "contao/core-bundle": "^5.6",
+        "contao/manager-plugin": "^2.13",
+        "phpstan/phpstan": "^2.1",
+        "contao/calendar-bundle": "^5.6",
+        "markocupic/export_table": "^5.1",
+        "markocupic/contao-flash-message": "^0.1",
+        "ramsey/uuid": "^3.0 || ^4.0",
+        "codefog/contao-haste": "^5.0",
+        "terminal42/notification_center": "^2.0",
+        "symfony/lock": "^6.4 || ^7.1",
+        "symfony/rate-limiter": "^6.4 || ^7.1"
     },
     "config": {
         "allow-plugins": {
-            "contao-components/installer": false,
-            "contao/manager-plugin": false,
-            "contao-community-alliance/composer-plugin": false
+            "contao-components/installer": true,
+            "php-http/discovery": true,
+            "contao/manager-plugin": true
         }
     }
 }

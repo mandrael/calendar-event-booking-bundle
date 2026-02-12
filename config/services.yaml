@@ -2,26 +2,54 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
-        public: false
+        public: true
         bind:
             $projectDir: '%kernel.project_dir%'
-            $checkout: '%markocupic_calendar_event_booking.checkout%'
+            $autoExpireReservedBookings: '%markocupic_calendar_event_booking.auto_expire_reserved_bookings%'
+            $autoExpireTimeLimit: '%markocupic_calendar_event_booking.auto_expire_time_limit%'
+            $autoDeleteExpiredBookings: '%markocupic_calendar_event_booking.auto_delete_expired_bookings%'
+            $autoDeleteCanceledBookings: '%markocupic_calendar_event_booking.auto_delete_canceled_bookings%'
+            $rateLimiterFactory: '@markocupic_calendar_event_booking.rate_limit.event_booking_factory'
+            $autoWaitingListPromotion: '%markocupic_calendar_event_booking.auto_waiting_list_promotion%'
+            $rateLimitBookingFormEnable: '%markocupic_calendar_event_booking.rate_limit.event_booking_form.enable%'
+            $notificationLogExclude: '%markocupic_calendar_event_booking.notification.log.exclude%'
 
     Markocupic\CalendarEventBookingBundle\:
         resource: ../src/
         exclude: [
-            '../src/{Event,Storage,Model,DependencyInjection}',
-            '../src/Checkout/Exception/CheckoutException.php',
-            '../src/Checkout/Exception/CheckoutException.php',
-            '../src/Checkout/Step/CheckoutManager.php',
-            '../src/Checkout/Step/DefaultCheckoutManagerFactory.php',
-            '../src/Checkout/CheckoutManagerFactoryCollection.php',
-            '../src/EventBooking/Config/EventConfig.php',
-            '../src/Registry/ExistingServiceException.php',
-            '../src/Registry/NonExistingServiceException.php',
-            '../src/Registry/PrioritizedServiceRegistry.php',
-            '../src/Registry/ServiceRegistry.php',
+            ../src/CheckoutHandler/CheckoutResult.php,
+            ../src/DependencyInjection,
+            ../src/Event,
+            ../src/Exception,
+            ../src/Model,
+            ../src/OptIn,
+            ../src/Parcel/Stamp,
         ]
 
-    Markocupic\CalendarEventBookingBundle\Checkout\CheckoutManagerFactoryCollection:
-        arguments: [ !tagged_iterator { tag: 'markocupic_calendar_event_booking.checkout_manager_factory', index_by: 'key' } ]
+    markocupic_calendar_event_booking.rate_limit.event_booking_factory:
+        class: Symfony\Component\RateLimiter\RateLimiterFactory
+        public: true
+        arguments:
+            - { id: markocupic_calendar_event_booking.event_booking, policy: '%markocupic_calendar_event_booking.rate_limit.event_booking_form.policy%', limit: '%markocupic_calendar_event_booking.rate_limit.event_booking_form.limit%', interval: '%markocupic_calendar_event_booking.rate_limit.event_booking_form.interval%' }
+            - '@contao.rate_limit.member_password_storage'
+            - '@?lock_factory'
+
+    markocupic_calendar_event_booking.flash_message.checkout:
+        class: Markocupic\ContaoFlashMessage\FlashMessage\Message
+        tags:
+            - { name: 'mc.flash_message.message_handler', messageId: 'cebb_checkout' }
+
+    markocupic_calendar_event_booking.flash_message.form:
+        class: Markocupic\ContaoFlashMessage\FlashMessage\Message
+        tags:
+            - { name: 'mc.flash_message.message_handler', messageId: 'cebb_form' }
+
+    markocupic_calendar_event_booking.flash_message.opt_in:
+        class: Markocupic\ContaoFlashMessage\FlashMessage\Message
+        tags:
+            - { name: 'mc.flash_message.message_handler', messageId: 'cebb_opt_in' }
+
+    markocupic_calendar_event_booking.flash_message.unsubscribe:
+        class: Markocupic\ContaoFlashMessage\FlashMessage\Message
+        tags:
+            - { name: 'mc.flash_message.message_handler', messageId: 'cebb_unsubscribe' }
