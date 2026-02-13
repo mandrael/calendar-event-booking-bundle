@@ -172,7 +172,7 @@ Telefon: ##member_phone##
 E-Mail: ##member_email##
 Begleitpersonen: ##member_escorts##
 Anzahl Tickets: ##member_ticketAmount##
-Geschlecht: ##member_gender##
+Geschlecht: {{label::MSC:##member_gender##}}
 Geburtsdatum: {{format_date::##member_dateOfBirth##::d.m.Y}}
 
 Stornierung erlauben: {if event_enableDeregistration=='1'}Ja{else}Nein{endif}
