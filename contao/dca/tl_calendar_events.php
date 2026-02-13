@@ -46,9 +46,10 @@ $GLOBALS['TL_DCA']['tl_calendar_events']['subpalettes']['enableWaitingList'] = '
 
 // Operations
 $GLOBALS['TL_DCA']['tl_calendar_events']['list']['operations']['bookings'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_calendar_events']['bookings'],
-    'href'  => 'do=calendar&table=tl_calendar_events_member',
-    'icon'  => 'bundles/markocupiccalendareventbooking/icons/users.svg',
+    'label'   => &$GLOBALS['TL_LANG']['tl_calendar_events']['bookings'],
+    'href'    => 'do=calendar&table=tl_calendar_events_member',
+    'primary' => true,
+    'icon'    => 'bundles/markocupiccalendareventbooking/icons/users.svg',
 ];
 
 // Fields
