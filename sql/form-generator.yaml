@@ -127,6 +127,7 @@ form_fields:
         label: Anmerkungen
         tabindex: 11
         class: form-cal-event-booking-%s
+        maxlength: 1000
         size:
             - 8
             - 40
