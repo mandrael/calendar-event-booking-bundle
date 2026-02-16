@@ -181,10 +181,7 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
             }
 
             $this->message->addError($this->translator->trans('mod_unsubscribe.error.unexpected_error', [], self::TRANS_DOMAIN));
-
-            if (method_exists($e, 'getMessage')) {
-                $this->contaoErrorLogger?->error($e->getMessage());
-            }
+            $this->contaoErrorLogger?->error($e->getMessage());
         } finally {
             $lock->release();
         }
