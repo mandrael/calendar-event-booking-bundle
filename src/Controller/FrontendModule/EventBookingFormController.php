@@ -196,7 +196,7 @@ class EventBookingFormController extends AbstractFrontendModuleController
         } catch (AbstractTranslatableException $e) {
             $this->connection->rollBack();
             $this->message->add($this->translator->trans($e->getTranslatableText(), $e->getMessageData(), $e->getMessageDomain()), $e->getSeverityLevel());
-        } catch (\throwable $e) {
+        } catch (\Throwable $e) {
             $this->connection->rollBack();
             $this->message->addError($this->translator->trans('mod_form.error.unexpected_error', [], self::TRANS_DOMAIN));
             $this->contaoErrorLogger?->error($e->getMessage());
@@ -225,7 +225,7 @@ class EventBookingFormController extends AbstractFrontendModuleController
     }
 
     /**
-     * We need the form id to target the form submitted (FORM_SUBMIT).
+     * We need the form id to target the submitted form (FORM_SUBMIT).
      */
     private function getFormId(int $formId): string
     {
