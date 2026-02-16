@@ -34,10 +34,10 @@ $GLOBALS['TL_DCA']['tl_calendar_events_member'] = [
     'list'     => [
         'sorting'           => [
             'mode'        => DataContainer::MODE_SORTABLE,
-            'panelLayout' => 'filter;sort,search,limit',
+            'panelLayout' => 'filter;sort,search,limit;columns',
         ],
         'label'             => [
-            'fields'      => ['addedOn', 'ticketAmount', 'gender', 'firstname', 'lastname', 'street', 'city', 'temporaryReserved', 'expired', 'canceled', 'optIn', 'waitingList', 'paid'],
+            'fields'      => ['addedOn', 'ticketAmount', 'gender', 'firstname', 'lastname', 'email', 'street', 'city', 'temporaryReserved', 'expired', 'canceled', 'optIn', 'waitingList', 'paid'],
             'showColumns' => true,
         ],
         'global_operations' => [
