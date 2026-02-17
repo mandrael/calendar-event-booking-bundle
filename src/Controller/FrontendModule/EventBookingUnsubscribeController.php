@@ -186,6 +186,8 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
             $lock->release();
         }
 
+        // Add messages to template
+        $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
         $template->set('messages', $this->message->hasMessages() ? $this->message->getAll() : null);
 
         if ($model->ceb_addImage && $event->addImage) {

@@ -88,8 +88,11 @@ class EventBookingOptInController extends AbstractFrontendModuleController
 
         $this->processOptInConfirmation($template, $optInModel, $token, $request, $booking, $event);
 
+        // Add image to template
         $this->addEventImageToTemplate($template, $model, $event);
 
+        // Peek messages and wrap them in a <p> tag.
+        $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
         $template->set('messages', $this->message->hasMessages() ? $this->message->getAll() : null);
 
         return $template->getResponse();

@@ -71,6 +71,9 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
             $errorMessage = $this->translator->trans('mod_checkout.error.booking_not_found', [], 'mc_calendar_event_booking');
             $this->message->addError($errorMessage);
             $template->set('hasInitializationError', true);
+
+            // Add messages to template
+            $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
             $template->set('messages', $this->message->hasMessages() ? $this->message->getAll() : null);
 
             // Stop here if initialization fails.
@@ -93,6 +96,10 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
         $template->set('booking', $this->booking);
         $template->set('event', $this->event);
         $template->set('calendar', $this->event->getRelated('pid')->current());
+
+        // Add messages to template
+        $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
+        $template->set('messages', $this->message->getAll());
 
         if ($model->ceb_addImage && $this->event->addImage) {
             $figure = $this->figureUtil->buildFigure($this->event->row());

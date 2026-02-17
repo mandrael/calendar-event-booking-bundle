@@ -252,6 +252,7 @@ class EventBookingFormController extends AbstractFrontendModuleController
         });
 
         $template->set('waitingListOpen', $this->waitingListOpen);
+        $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
         $template->set('messages', $this->message->hasMessages() ? $this->message->getAll() : null);
         $this->addTemplateData->addTemplateData($template, $this->event, $request);
     }
