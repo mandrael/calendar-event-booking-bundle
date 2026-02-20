@@ -166,7 +166,6 @@ class NotificationManager
         return $tokens;
     }
 
-
     protected function addOrderTokens(array $tokens, CalendarEventsOrderModel $order): array
     {
         foreach ($order->row() as $key => $value) {

@@ -23,7 +23,7 @@ class DefaultTokenConfig
                 'member_email',
                 'organizer_email',
             ],
-            'text_token'  => [
+            'text_token' => [
                 'calendar_*',
                 'calendar_title',
                 'calendar_requireOptIn',
@@ -84,7 +84,7 @@ class DefaultTokenConfig
                 'payment_details',
                 'payment_notes',
             ],
-            'file_token'  => [
+            'file_token' => [
                 // empty
             ],
         ];
