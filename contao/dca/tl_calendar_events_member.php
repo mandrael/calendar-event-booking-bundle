@@ -21,7 +21,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_member'] = [
     'config'   => [
         'dataContainer'    => DC_Table::class,
         'ptable'           => 'tl_calendar_events',
-        'ctable'           => ['tl_calendar_events_payment'],
+        'ctable'           => ['tl_calendar_events_order', 'tl_calendar_events_booking_notification'],
         'enableVersioning' => true,
         'doNotCopyRecords' => true,
         'sql'              => [
@@ -72,20 +72,20 @@ $GLOBALS['TL_DCA']['tl_calendar_events_member'] = [
                 'icon'       => 'delete.svg',
                 'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null).'\'))return false" data-action="contao--scroll-offset#store"',
             ],
-            'show'         => [
-                'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['show'],
-                'href'  => 'act=show',
-                'icon'  => 'show.svg',
-            ],
-            'payment'      => [
-                'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['payment'],
-                'href'  => 'do=calendar&table=tl_calendar_events_payment',
-                'icon'  => 'bundles/markocupiccalendareventbooking/icons/circle-dollar-sign.svg',
+            'order'        => [
+                'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['order'],
+                'href'  => 'do=calendar&table=tl_calendar_events_order',
+                'icon'  => 'bundles/markocupiccalendareventbooking/icons/file-spreadsheet.svg',
             ],
             'notification' => [
                 'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['notification'],
                 'href'  => 'do=calendar&table=tl_calendar_events_booking_notification',
                 'icon'  => 'bundles/markocupiccalendareventbooking/icons/mail.svg',
+            ],
+            'show'         => [
+                'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['show'],
+                'href'  => 'act=show',
+                'icon'  => 'show.svg',
             ],
         ],
     ],
@@ -268,8 +268,8 @@ $GLOBALS['TL_DCA']['tl_calendar_events_member'] = [
             'sql'       => ['type' => 'integer', 'length' => 3, 'unsigned' => true, 'notnull' => true, 'default' => 0],
         ],
         'bookingToken'      => [
-            'eval'      => ['doNotCopy' => true, 'maxlength' => MySQLPlatform::LENGTH_LIMIT_TINYTEXT, 'tl_class' => 'w50'],
             'default'   => Uuid::uuid4()->toString(),
+            'eval'      => ['doNotCopy' => true, 'maxlength' => MySQLPlatform::LENGTH_LIMIT_TINYTEXT, 'tl_class' => 'w50'],
             'filter'    => true,
             'inputType' => 'text',
             'search'    => true,

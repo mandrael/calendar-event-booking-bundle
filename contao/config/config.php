@@ -15,13 +15,17 @@ declare(strict_types=1);
 use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsBookingNotificationModel;
 use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsMemberModel;
 use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsPaymentModel;
+use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsOrderModel;
+
 
 // Add child tables to the calendar module
 $GLOBALS['BE_MOD']['content']['calendar']['tables'][] = CalendarEventsMemberModel::getTable();
+$GLOBALS['BE_MOD']['content']['calendar']['tables'][] = CalendarEventsOrderModel::getTable();
 $GLOBALS['BE_MOD']['content']['calendar']['tables'][] = CalendarEventsPaymentModel::getTable();
 $GLOBALS['BE_MOD']['content']['calendar']['tables'][] = CalendarEventsBookingNotificationModel::getTable();
 
 // Register custom models
 $GLOBALS['TL_MODELS']['tl_calendar_events_member'] = CalendarEventsMemberModel::class;
+$GLOBALS['TL_MODELS']['tl_calendar_events_order'] = CalendarEventsOrderModel::class;
 $GLOBALS['TL_MODELS']['tl_calendar_events_payment'] = CalendarEventsPaymentModel::class;
 $GLOBALS['TL_MODELS']['tl_calendar_events_booking_notification'] = CalendarEventsBookingNotificationModel::class;

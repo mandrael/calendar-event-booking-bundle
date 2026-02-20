@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.1">
+  <file datatype="php" original="contao/languages/en/tl_calendar_events_order.php" source-language="en">
+    <body>
+      <trans-unit id="tl_calendar_events_order.order_legend">
+        <source>Order data</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.payment.0">
+        <source>Payments</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.payment.1">
+        <source>Show payments for booking with ID %s.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.uuid.0">
+        <source>Order UUID</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.uuid.1">
+        <source>The unique UUID of this order record.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.bookingUuid.0">
+        <source>Booking UUID</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.bookingUuid.1">
+        <source>The UUID that links this order to the related booking.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.provider.0">
+        <source>Payment provider</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.provider.1">
+        <source>Select or display the payment provider that processed this order (e.g. PayPal).</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.providerOrderId.0">
+        <source>Provider order ID</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.providerOrderId.1">
+        <source>The external order ID assigned by the payment provider.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.createTime.0">
+        <source>Order creation time</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.createTime.1">
+        <source>The time when the order was created.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.status.0">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.status.1">
+        <source>The current order status as reported by the payment provider.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.payerId.0">
+        <source>Payer ID</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.payerId.1">
+        <source>The payer’s provider-specific identifier (e.g. PayPal payer ID).</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.payerEmail.0">
+        <source>Payer email</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.payerEmail.1">
+        <source>The email address of the payer as reported by the provider.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.grossAmount.0">
+        <source>Gross amount</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.grossAmount.1">
+        <source>Total amount paid by the customer (including taxes).</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.netAmount.0">
+        <source>Net amount</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.netAmount.1">
+        <source>Net amount excluding taxes (e.g. item total).</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.vatAmount.0">
+        <source>VAT amount</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.vatAmount.1">
+        <source>Total VAT included in the order.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.currencyCode.0">
+        <source>Currency code</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.currencyCode.1">
+        <source>Enter the currency code (e.g. EUR).</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.details.0">
+        <source>Details (raw payload)</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.details.1">
+        <source>Stores the raw provider payload for auditing and debugging.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.notes.0">
+        <source>Notes</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_order.notes.1">
+        <source>Optional internal notes related to this order.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

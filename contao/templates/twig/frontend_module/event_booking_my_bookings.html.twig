@@ -37,7 +37,7 @@
                             {% for payment in item.payments %}
                                 <div class="ceb-my-bookings--info-payment">
                                     <div>{{ payment.grossAmount }} {{ payment.currencyCode }}</div>
-                                    <div>{{ payment.method }}</div>
+                                    <div>{{ payment.provider }}</div>
                                     <div>{{ payment.uuid }}</div>
                                 </div>
                             {% endfor %}

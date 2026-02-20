@@ -18,10 +18,11 @@ use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Markocupic\CalendarEventBookingBundle\EventListener\ContaoHook\PriceRegexpListener;
 use Ramsey\Uuid\Uuid;
 
-$GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
+$GLOBALS['TL_DCA']['tl_calendar_events_order'] = [
     'config'   => [
         'dataContainer'    => DC_Table::class,
-        'ptable'           => 'tl_calendar_events_order',
+        'ptable'           => 'tl_calendar_events_member',
+        'ctable'           => ['tl_calendar_events_payment'],
         'enableVersioning' => true,
         'sql'              => [
             'keys' => [
@@ -33,12 +34,12 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
     'list'     => [
         'sorting'           => [
             'mode'        => DataContainer::MODE_SORTABLE,
-            'fields'      => ['type ASC'],
+            'fields'      => ['createTime ASC'],
             'flag'        => DataContainer::SORT_DAY_DESC,
             'panelLayout' => 'filter;sort,search',
         ],
         'label'             => [
-            'fields'      => ['type', 'status', 'captureTime', 'grossAmount', 'currencyCode', 'refundTime', 'refundAmount'],
+            'fields'      => ['createTime', 'payerEmail', 'grossAmount', 'currencyCode', 'status', 'provider', 'providerOrderId'],
             'showColumns' => true,
         ],
         'global_operations' => [
@@ -50,25 +51,42 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             ],
         ],
         'operations'        => [
-            'all',
+            'edit'    => [
+                'href' => 'act=edit',
+                'icon' => 'edit.svg',
+            ],
+            'payment' => [
+                'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_order']['payment'],
+                'href'  => 'do=calendar&table=tl_calendar_events_payment',
+                'icon'  => 'bundles/markocupiccalendareventbooking/icons/circle-dollar-sign.svg',
+            ],
+            'delete'  => [
+                'href'       => 'act=delete',
+                'icon'       => 'delete.svg',
+                'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null).'\'))return false" data-action="contao--scroll-offset#store"',
+            ],
+            'show'    => [
+                'href' => 'act=show',
+                'icon' => 'show.svg',
+            ],
         ],
     ],
     'palettes' => [
-        'default' => '{payment_legend},bookingUuid,orderUuid,type,provider,providerOrderId,providerCaptureId,captureTime,status,isFinal,grossAmount,netAmountReceived,captureFee,currencyCode;{refund_legend},refundTime,refundAmount,refundFee;{details_legend},details;{notes_legend},notes',
+        'default' => '{order_legend},uuid,bookingUuid,provider,providerOrderId,createTime,status,payerId,payerEmail,grossAmount,netAmount,vatAmount,currencyCode,details,notes',
     ],
     'fields'   => [
-        'id'                => [
+        'id'              => [
             'sql' => 'int(10) unsigned NOT NULL auto_increment',
         ],
-        'pid'               => [
+        'pid'             => [
             'sql'        => ['type' => 'integer', 'length' => 10, 'unsigned' => true, 'notnull' => true, 'default' => 0],
             'foreignKey' => 'tl_calendar_events_member.id',
             'relation'   => ['type' => 'belongsTo', 'load' => 'lazy'],
         ],
-        'tstamp'            => [
+        'tstamp'          => [
             'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ],
-        'uuid'              => [
+        'uuid'            => [
             'default'   => Uuid::uuid4()->toString(),
             'eval'      => ['doNotCopy' => true, 'mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
             'exclude'   => true,
@@ -77,7 +95,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'bookingUuid'       => [
+        'bookingUuid'     => [
             'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
             'exclude'   => true,
             'inputType' => 'text',
@@ -85,7 +103,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'orderUuid'         => [
+        'provider'        => [
             'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
             'exclude'   => true,
             'inputType' => 'text',
@@ -93,16 +111,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'type'              => [
-            'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
-            'exclude'   => true,
-            'inputType' => 'select',
-            'options'   => ['capture', 'refund'],
-            'search'    => true,
-            'sorting'   => true,
-            'sql'       => "varchar(255) NOT NULL default 'capture'",
-        ],
-        'provider'          => [
+        'providerOrderId' => [
             'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
             'exclude'   => true,
             'inputType' => 'text',
@@ -110,30 +119,14 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'providerOrderId'   => [
-            'eval'      => ['doNotCopy' => true, 'mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
-            'exclude'   => true,
-            'inputType' => 'text',
-            'search'    => true,
-            'sorting'   => true,
-            'sql'       => "varchar(255) NOT NULL default ''",
-        ],
-        'providerCaptureId' => [
-            'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
-            'exclude'   => true,
-            'inputType' => 'text',
-            'search'    => true,
-            'sorting'   => true,
-            'sql'       => "varchar(255) NOT NULL default ''",
-        ],
-        'captureTime'       => [
+        'createTime'      => [
             'eval'      => ['doNotCopy' => true, 'datepicker' => true, 'rgxp' => 'datim', 'tl_class' => 'w50 wizard'],
             'flag'      => DataContainer::SORT_DAY_DESC,
             'inputType' => 'text',
             'sorting'   => true,
             'sql'       => ['type' => 'string', 'length' => 10, 'notnull' => true, 'default' => ''],
         ],
-        'status'            => [
+        'status'          => [
             'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
             'exclude'   => true,
             'inputType' => 'text',
@@ -141,14 +134,23 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'isFinal'           => [
-            'eval'      => ['tl_class' => 'clr cbx m12'],
+        'payerId'         => [
+            'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
             'exclude'   => true,
-            'filter'    => true,
-            'inputType' => 'checkbox',
-            'sql'       => ['type' => 'boolean', 'default' => false],
+            'inputType' => 'text',
+            'search'    => true,
+            'sorting'   => true,
+            'sql'       => "varchar(255) NOT NULL default ''",
         ],
-        'grossAmount'       => [
+        'payerEmail'      => [
+            'eval'      => ['mandatory' => false, 'rgxp' => 'email', 'maxlength' => 255, 'tl_class' => 'w50'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'search'    => true,
+            'sorting'   => true,
+            'sql'       => "varchar(255) NOT NULL default ''",
+        ],
+        'grossAmount'     => [
             'eval'      => ['mandatory' => false, 'maxlength' => MySQLPlatform::LENGTH_LIMIT_TINYTEXT, 'rgxp' => PriceRegexpListener::REGEXP_NAME, 'tl_class' => 'w50'],
             'exclude'   => true,
             'inputType' => 'text',
@@ -156,7 +158,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => 'DOUBLE PRECISION DEFAULT 0 NOT NULL default 0',
         ],
-        'netAmountReceived' => [
+        'netAmount'       => [
             'eval'      => ['mandatory' => false, 'maxlength' => MySQLPlatform::LENGTH_LIMIT_TINYTEXT, 'rgxp' => PriceRegexpListener::REGEXP_NAME, 'tl_class' => 'w50'],
             'exclude'   => true,
             'inputType' => 'text',
@@ -164,7 +166,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => 'DOUBLE PRECISION DEFAULT 0 NOT NULL default 0',
         ],
-        'captureFee'        => [
+        'vatAmount'       => [
             'eval'      => ['mandatory' => false, 'maxlength' => MySQLPlatform::LENGTH_LIMIT_TINYTEXT, 'rgxp' => PriceRegexpListener::REGEXP_NAME, 'tl_class' => 'w50'],
             'exclude'   => true,
             'inputType' => 'text',
@@ -172,7 +174,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => 'DOUBLE PRECISION DEFAULT 0 NOT NULL default 0',
         ],
-        'currencyCode'      => [
+        'currencyCode'    => [
             'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'clr w50'],
             'exclude'   => true,
             'filter'    => true,
@@ -182,45 +184,14 @@ $GLOBALS['TL_DCA']['tl_calendar_events_payment'] = [
             'sorting'   => true,
             'sql'       => "varchar(255) NOT NULL default 'EUR'",
         ],
-        'providerRefundId'  => [
-            'eval'      => ['mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50'],
-            'exclude'   => true,
-            'inputType' => 'text',
-            'search'    => true,
-            'sorting'   => true,
-            'sql'       => "varchar(255) NOT NULL default ''",
-        ],
-        'refundTime'        => [
-            'eval'      => ['doNotCopy' => true, 'datepicker' => true, 'rgxp' => 'datim', 'tl_class' => 'w50 wizard'],
-            'flag'      => DataContainer::SORT_DAY_DESC,
-            'inputType' => 'text',
-            'sorting'   => true,
-            'sql'       => ['type' => 'string', 'length' => 10, 'notnull' => true, 'default' => ''],
-        ],
-        'refundAmount'      => [
-            'eval'      => ['mandatory' => false, 'maxlength' => MySQLPlatform::LENGTH_LIMIT_TINYTEXT, 'rgxp' => PriceRegexpListener::REGEXP_NAME, 'tl_class' => 'w50'],
-            'exclude'   => true,
-            'inputType' => 'text',
-            'search'    => true,
-            'sorting'   => true,
-            'sql'       => 'DOUBLE PRECISION DEFAULT 0 NOT NULL default 0',
-        ],
-        'refundFee'         => [
-            'eval'      => ['mandatory' => false, 'maxlength' => MySQLPlatform::LENGTH_LIMIT_TINYTEXT, 'rgxp' => PriceRegexpListener::REGEXP_NAME, 'tl_class' => 'w50'],
-            'exclude'   => true,
-            'inputType' => 'text',
-            'search'    => true,
-            'sorting'   => true,
-            'sql'       => 'DOUBLE PRECISION DEFAULT 0 NOT NULL default 0',
-        ],
-        'details'           => [
+        'details'         => [
             'eval'      => ['doNotCopy' => true, 'mandatory' => false, 'readonly' => true, 'tl_class' => 'clr w50'],
             'exclude'   => true,
             'inputType' => 'textarea',
             'search'    => true,
             'sql'       => "mediumtext NOT NULL default ''",
         ],
-        'notes'             => [
+        'notes'           => [
             'eval'      => ['mandatory' => false, 'tl_class' => 'w50', 'useRawRequestData' => true],
             'exclude'   => true,
             'inputType' => 'textarea',

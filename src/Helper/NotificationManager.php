@@ -22,6 +22,7 @@ use Contao\UserModel;
 use Markocupic\CalendarEventBookingBundle\Event\SendNotificationEvent;
 use Markocupic\CalendarEventBookingBundle\LinkBuilder\UnsubscribeLinkBuilder;
 use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsMemberModel;
+use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsOrderModel;
 use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsPaymentModel;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -37,6 +38,8 @@ class NotificationManager
     private const PREFIX_EVENT = 'event_';
 
     private const PREFIX_ORGANIZER = 'organizer_';
+
+    private const PREFIX_ORDER = 'order_';
 
     private const PREFIX_PAYMENT = 'payment_';
 
@@ -62,7 +65,7 @@ class NotificationManager
         return $this->notificationCenter->sendNotification($event->getNotificationId(), $event->getTokens());
     }
 
-    public function getNotificationTokens(CalendarEventsMemberModel $booking, CalendarEventsPaymentModel|null $payment = null): array
+    public function getNotificationTokens(CalendarEventsMemberModel $booking, CalendarEventsOrderModel|null $order = null, CalendarEventsPaymentModel|null $payment = null): array
     {
         $event = $this->getEventOrFail($booking);
         $calendar = $this->getCalendarOrFail($event);
@@ -75,6 +78,10 @@ class NotificationManager
         $tokens = $this->addEventTokens($tokens, $event);
         $tokens = $this->addOrganizerTokens($tokens, $event);
         $tokens = $this->addUnsubscribeToken($tokens, $booking);
+
+        if (null !== $order) {
+            $tokens = $this->addOrderTokens($tokens, $order);
+        }
 
         if (null !== $payment) {
             $tokens = $this->addPaymentTokens($tokens, $payment);
@@ -155,6 +162,16 @@ class NotificationManager
     protected function addUnsubscribeToken(array $tokens, CalendarEventsMemberModel $booking): array
     {
         $tokens[self::PREFIX_MEMBER.'unsubscribeLink'] = $this->unsubscribeLinkBuilder->build($booking);
+
+        return $tokens;
+    }
+
+
+    protected function addOrderTokens(array $tokens, CalendarEventsOrderModel $order): array
+    {
+        foreach ($order->row() as $key => $value) {
+            $tokens[self::PREFIX_ORDER.$key] = StringUtil::revertInputEncoding((string) $value);
+        }
 
         return $tokens;
     }

@@ -15,9 +15,10 @@ declare(strict_types=1);
 namespace Markocupic\CalendarEventBookingBundle\Event;
 
 use Contao\CalendarEventsModel;
+use Contao\Model\Collection;
 use Markocupic\CalendarEventBookingBundle\CheckoutHandler\CheckoutHandlerInterface;
 use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsMemberModel;
-use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsPaymentModel;
+use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsOrderModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\Event;
 
@@ -26,7 +27,8 @@ class PaymentEvent extends Event
     public function __construct(
         private readonly CalendarEventsModel $event,
         private readonly CalendarEventsMemberModel $booking,
-        private readonly CalendarEventsPaymentModel $payment,
+        private readonly CalendarEventsOrderModel $order,
+        private readonly Collection $payments,
         private readonly CheckoutHandlerInterface $checkoutHandler,
         private readonly Request $request,
     ) {
@@ -52,8 +54,13 @@ class PaymentEvent extends Event
         return $this->booking;
     }
 
-    public function getPayment(): CalendarEventsPaymentModel
+    public function getOrder(): CalendarEventsOrderModel
     {
-        return $this->payment;
+        return $this->order;
+    }
+
+    public function getPayments(): Collection
+    {
+        return $this->payments;
     }
 }

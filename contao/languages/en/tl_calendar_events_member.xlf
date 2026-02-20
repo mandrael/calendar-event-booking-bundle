@@ -32,17 +32,23 @@
       <trans-unit id="tl_calendar_events_member.delete.1">
         <source>Delete booking with ID %s.</source>
       </trans-unit>
+      <trans-unit id="tl_calendar_events_member.notification.0">
+        <source>Notifications</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_member.notification.1">
+        <source>Display notificatios for booking with ID %s.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_member.order.0">
+        <source>Order</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_member.order.1">
+        <source>Show the order for the booking ID %s.</source>
+      </trans-unit>
       <trans-unit id="tl_calendar_events_member.show.0">
         <source>Show</source>
       </trans-unit>
       <trans-unit id="tl_calendar_events_member.show.1">
         <source>Show booking with ID %s.</source>
-      </trans-unit>
-      <trans-unit id="tl_calendar_events_member.payment.0">
-        <source>Payments</source>
-      </trans-unit>
-      <trans-unit id="tl_calendar_events_member.payment.1">
-        <source>Show payments for booking with ID %s.</source>
       </trans-unit>
       <trans-unit id="tl_calendar_events_member.salutation_male">
         <source>Mr</source>

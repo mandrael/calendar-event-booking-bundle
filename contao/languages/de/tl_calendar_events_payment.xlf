@@ -6,125 +6,177 @@
         <source>Payment</source>
         <target>Zahlung</target>
       </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.refund_legend">
+        <source>Refund</source>
+        <target>Rückerstattung</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.details_legend">
+        <source>Details</source>
+        <target>Details</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.notes_legend">
+        <source>Notes</source>
+        <target>Notizen</target>
+      </trans-unit>
       <trans-unit id="tl_calendar_events_payment.uuid.0">
-        <source>Payment UUID.</source>
-        <target>Zahlungs-UUID.</target>
+        <source>Payment UUID</source>
+        <target>Zahlungs-UUID</target>
       </trans-unit>
       <trans-unit id="tl_calendar_events_payment.uuid.1">
-        <source>Add a payment UUID.</source>
-        <target>Fügen Sie eine Zahlungs-UUID hinzu.</target>
+        <source>The UUID linking this payment to the order.</source>
+        <target>Die UUID, die diese Zahlung mit der Order verknüpft.</target>
       </trans-unit>
       <trans-unit id="tl_calendar_events_payment.bookingUuid.0">
         <source>Booking UUID</source>
         <target>Buchungs-UUID</target>
       </trans-unit>
       <trans-unit id="tl_calendar_events_payment.bookingUuid.1">
-        <source>Add a bookikng UUID.</source>
-        <target>Fügen Sie eine Buchungs-UUID hinzu.</target>
+        <source>The UUID linking this payment to the booking.</source>
+        <target>Die UUID, die diese Zahlung mit der Buchung verknüpft.</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.paidAt.0">
-        <source>Paid at</source>
-        <target>Bezahlt am</target>
+      <trans-unit id="tl_calendar_events_payment.orderUuid.0">
+        <source>Order UUID</source>
+        <target>Bestell-UUID</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.paidAt.1">
-        <source>Add a payment date.</source>
-        <target>Fügen Sie ein Zahlungsdatum hinzu.</target>
+      <trans-unit id="tl_calendar_events_payment.orderUuid.1">
+        <source>The UUID of the related order record.</source>
+        <target>Die UUID des zugehörigen Bestelldatensatzes.</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.refundedAt.0">
-        <source>Refunded at</source>
-        <target>Rückerstattet am</target>
+      <trans-unit id="tl_calendar_events_payment.type.0">
+        <source>Payment type</source>
+        <target>Zahlungstyp</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.refundedAt.1">
-        <source>Add a refunding date.</source>
-        <target>Fügen Sie ein Rückerstattungsdatum hinzu.</target>
+      <trans-unit id="tl_calendar_events_payment.type.1">
+        <source>The type of this payment entry (e.g. capture or refund).</source>
+        <target>Der Typ dieses Zahlungseintrags (z.B. Capture oder Refund).</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.method.0">
-        <source>Payment method</source>
-        <target>Zahlungsmethode</target>
+      <trans-unit id="tl_calendar_events_payment.provider.0">
+        <source>Payment provider</source>
+        <target>Zahlungsanbieter</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.method.1">
-        <source>Add a payment method.</source>
-        <target>Fügen Sie eine Zahlungsmethode hinzu.</target>
+      <trans-unit id="tl_calendar_events_payment.provider.1">
+        <source>The payment provider that processed this transaction.</source>
+        <target>Der Zahlungsanbieter, der diese Transaktion verarbeitet hat.</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.orderId.0">
-        <source>Order ID</source>
-        <target>Auftragsnummer</target>
+      <trans-unit id="tl_calendar_events_payment.providerOrderId.0">
+        <source>Provider order ID</source>
+        <target>Provider-Bestell-ID</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.orderId.1">
-        <source>Add an order id.</source>
-        <target>Fügen Sie eine Auftragsnummer hinzu.</target>
+      <trans-unit id="tl_calendar_events_payment.providerOrderId.1">
+        <source>The external order ID assigned by the provider.</source>
+        <target>Die vom Zahlungsanbieter vergebene externe Bestell-ID.</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.transactionId.0">
-        <source>Transaction ID</source>
-        <target>Transaktions-ID</target>
+      <trans-unit id="tl_calendar_events_payment.providerCaptureId.0">
+        <source>Provider capture ID</source>
+        <target>Provider-Capture-ID</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.transactionId.1">
-        <source>Add a transaction id.</source>
-        <target>Fügen Sie eine Transaktions-ID hinzu.</target>
+      <trans-unit id="tl_calendar_events_payment.providerCaptureId.1">
+        <source>The capture ID assigned by the provider.</source>
+        <target>Die vom Zahlungsanbieter vergebene Capture-ID.</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.transactionStatus.0">
-        <source>Transaction status</source>
-        <target>Transaktionsstatus</target>
+      <trans-unit id="tl_calendar_events_payment.captureTime.0">
+        <source>Capture time</source>
+        <target>Capture-Zeitpunkt</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.transactionStatus.1">
-        <source>Add a transaction status.</source>
-        <target>Fügen Sie einen Transaktionsstatus hinzu.</target>
+      <trans-unit id="tl_calendar_events_payment.captureTime.1">
+        <source>The UNIX timestamp when the payment was captured.</source>
+        <target>Der UNIX-Zeitstempel, zu dem die Zahlung erfasst wurde.</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.currencyCode.0">
-        <source>Currency code</source>
-        <target>Währungscode</target>
+      <trans-unit id="tl_calendar_events_payment.status.0">
+        <source>Status</source>
+        <target>Status</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.currencyCode.1">
-        <source>Enter the currency code (e.g. EUR).</source>
-        <target>Geben Sie den Währungscode ein (z.B. EUR).</target>
+      <trans-unit id="tl_calendar_events_payment.status.1">
+        <source>The transaction status reported by the provider.</source>
+        <target>Der vom Zahlungsanbieter gemeldete Transaktionsstatus.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.isFinal.0">
+        <source>Final capture</source>
+        <target>Endgültige Abbuchung</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.isFinal.1">
+        <source>Indicates whether this is the final capture of the order.</source>
+        <target>Gibt an, ob es sich um die endgültige Abbuchung der Bestellung handelt.</target>
       </trans-unit>
       <trans-unit id="tl_calendar_events_payment.grossAmount.0">
         <source>Gross amount</source>
         <target>Bruttobetrag</target>
       </trans-unit>
       <trans-unit id="tl_calendar_events_payment.grossAmount.1">
-        <source>Enter the gross amount paid (e.g. 215.00).</source>
-        <target>Geben Sie den bezahlten Bruttobetrag ein (z.B. 215.00).</target>
+        <source>The total amount the customer paid (including taxes).</source>
+        <target>Der Gesamtbetrag, den der Kunde bezahlt hat (inkl. Steuern).</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.netAmount.0">
-        <source>Net amount</source>
-        <target>Nettobetrag</target>
+      <trans-unit id="tl_calendar_events_payment.netAmountReceived.0">
+        <source>Net amount received</source>
+        <target>Auszahlungsbetrag</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.netAmount.1">
-        <source>Enter the net amount paid (e.g. 200.00).</source>
-        <target>Geben Sie den bezahlten Nettobetrag ein (z.B. 200.00).</target>
+      <trans-unit id="tl_calendar_events_payment.netAmountReceived.1">
+        <source>The payout amount after provider fees have been deducted.</source>
+        <target>Der Auszahlungsbetrag nach Abzug der Anbietergebühren.</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.vatAmount.0">
-        <source>VAT amount</source>
-        <target>Mehrwertsteuerbetrag</target>
+      <trans-unit id="tl_calendar_events_payment.captureFee.0">
+        <source>Provider fee</source>
+        <target>Anbietergebühr</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.vatAmount.1">
-        <source>Enter the VAT amount paid (e.g. 15.00).</source>
-        <target>Geben Sie den bezahlten Mehrwertsteuerbetrag ein (z.B. 15.00).</target>
+      <trans-unit id="tl_calendar_events_payment.captureFee.1">
+        <source>The fee charged by the payment provider.</source>
+        <target>Die vom Zahlungsanbieter erhobene Gebühr.</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.taxValue.0">
-        <source>Tax value (percent)</source>
-        <target>Steuersatz (Prozent)</target>
+      <trans-unit id="tl_calendar_events_payment.currencyCode.0">
+        <source>Currency code</source>
+        <target>Währungscode</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.taxValue.1">
-        <source>Enter the tax as a percent value (e.g. 7.50)</source>
-        <target>Geben Sie den Steuersatz als Prozentwert ein (z.B. 7.50)</target>
+      <trans-unit id="tl_calendar_events_payment.currencyCode.1">
+        <source>The ISO currency code of this payment (e.g. EUR).</source>
+        <target>Der ISO-Währungscode dieser Zahlung (z.B. EUR).</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.transactionDetails.0">
-        <source>Transaction details</source>
-        <target>Transaktionsdetails</target>
+      <trans-unit id="tl_calendar_events_payment.providerRefundId.0">
+        <source>provider refund ID</source>
+        <target>Rückerstattungs-ID des Zahlungsanbieters</target>
       </trans-unit>
-      <trans-unit id="tl_calendar_events_payment.transactionDetails.1">
-        <source>Enter the transaction details.</source>
-        <target>Geben Sie die Transaktionsdetails ein.</target>
+      <trans-unit id="tl_calendar_events_payment.providerRefundId.1">
+        <source>The unique identification number under which the payment provider processed the refund.</source>
+        <target>Die eindeutige Identifikationsnummer, unter der der Zahlungsanbieter die Rückerstattung verarbeitet hat.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.refundTime.0">
+        <source>Refund time</source>
+        <target>Rückerstattungs-Zeitpunkt</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.refundTime.1">
+        <source>The UNIX timestamp when the refund was processed by the provider.</source>
+        <target>Der UNIX-Zeitstempel, zu dem die Rückerstattung vom Anbieter verarbeitet wurde.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.refundAmount.0">
+        <source>Refund amount</source>
+        <target>Rückerstattungs-Betrag</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.refundAmount.1">
+        <source>The refunded amount (usually negative for internal calculations).</source>
+        <target>Der rückerstattete Betrag (intern üblicherweise negativ gespeichert).</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.refundFee.0">
+        <source>Refund fee</source>
+        <target>Rückerstattungs-Gebühr</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.refundFee.1">
+        <source>The fee charged by the provider for processing the refund.</source>
+        <target>Die vom Anbieter berechnete Gebühr für die Rückerstattung.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.details.0">
+        <source>Details (raw payload)</source>
+        <target>Details (Rohdaten)</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_payment.details.1">
+        <source>Stores the raw provider payload for auditing and debugging.</source>
+        <target>Speichert die Rohdaten des Zahlungsanbieters für Audit und Fehlersuche.</target>
       </trans-unit>
       <trans-unit id="tl_calendar_events_payment.notes.0">
         <source>Notes</source>
         <target>Notizen</target>
       </trans-unit>
       <trans-unit id="tl_calendar_events_payment.notes.1">
-        <source>Enter the notes.</source>
-        <target>Geben Sie die Notizen ein.</target>
+        <source>Internal notes for this payment entry.</source>
+        <target>Interne Notizen zu diesem Zahlungseintrag.</target>
       </trans-unit>
     </body>
   </file>

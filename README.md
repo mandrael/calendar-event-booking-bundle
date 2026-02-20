@@ -58,6 +58,7 @@ Abschnitt "Konfiguration" beachten!
 ### 1. Kalender und Events anlegen.
 
 Auf Kalenderebene muss/müssen unter anderem
+
 - die Seite mit dem Event-Buchungs-Checkout-Modul ausgewählt werden.
 - die Seite mit dem Event-Buchungs-Stornierungs-Modul ausgewählt werden.
 - alle Benachrichtigungen ausgewählt werden
@@ -144,13 +145,16 @@ Dazu muss aber im Event die Event-Stornierung aktiviert werden und im Kalender d
 
 #### Gebrauch der Simple Tokens im Notification Center
 
-|                                           |                              |                                                                                                                                                                                                                                                           |
-|:------------------------------------------|:-----------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Teilnehmer                                | `tl_calendar_events_member`  | `##member_gender##` (Männlich, Weiblich oder Divers), `##member_salutation##` (Übersetzt: Herr oder Frau), `##member_email##`, `##member_firstname##`, `##member_street##`, etc.                                                                          |
-| Event                                     | `tl_calendar_events`         | `##event_title##`, `##event_street##`, `##event_postal##`, `##event_city##`, `##event_unsubscribeLimitTstamp##`, etc.                                                                                                                                     |
-| Organisator/Email-Absender                | `tl_user`                    | `##organizer_name##`, `##organizer_email##`, etc.                                                                                                                                                                                                         |
-| Angaben zur Zahlung                       | `tl_calendar_events_payment` | `##uuid##`, `##bookingUuid##`, `##paidAt##`, `##refundedAt##`, `##method##`, `##transactionId##`, `##transactionStatus##`, `##currencyCode##`, `##taxValue##`, `##grossAmount##`, `##netAmount##`, `##vatAmount##`, `##transactionDetails##`, `##notes##` |
-| Insert-Tags und Simple Tokens kombinieren | `format_date`, usw.          | Simple Tokens lassen sich mit Insert-Tags kombinieren. -> `{{format_date::##member_dateOfBirth##::d.m.Y}}`, `{{format_date::##event_startDate##::d.m.Y}}`, usw.                                                                                           |
+|                                                                            |                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|:---------------------------------------------------------------------------|:-----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Teilnehmer                                                                 | `tl_calendar_events_member`  | `##member_gender##` (Männlich, Weiblich oder Divers), `##member_salutation##` (Übersetzt: Herr oder Frau), `##member_email##`, `##member_firstname##`, `##member_street##`, etc.                                                                                                                                                                                                                                                                                                                        |
+| Event                                                                      | `tl_calendar_events`         | `##event_title##`, `##event_street##`, `##event_postal##`, `##event_city##`, `##event_unsubscribeLimitTstamp##`, etc.                                                                                                                                                                                                                                                                                                                                                                                   |
+| Organisator/Email-Absender                                                 | `tl_user`                    | `##organizer_name##`, `##organizer_email##`, etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Angaben zur Order beim Zahlungsdienstleister (nur mit Zahlungs-Checkout)   | `tl_calendar_events_order`   | `##order_uuid##`, `##order_bookingUuid##`, `##order_provider##`, `##order_providerOrderId##`, `##order_createTime##`, `##order_status##`, `##order_payerId##`, `##order_payerEmail##`, `##order_grossAmount##`, `##order_netAmound##`, `##order_vatAmount##`, `##order_currencyCode##`, `##order_details##`, `##order_notes##`                                                                                                                                                                          |
+| Angaben zur Zahlung beim Zahlungsdienstleister (nur mit Zahlungs-Checkout) | `tl_calendar_events_payment` | `##payment_uuid##`, `##payment_bookingUuid##`, `##payment_orderUuid##`, `##payment_type##`, `##payment_provider##`, `##payment_providerOrderId##`, `##payment_providerCaptureId##`, `##payment_captureTime##`, `##payment_status##`, `##payment_isFinal##`, `##payment_grossAmount##`, `##payment_netAmountReceived##`, `##payment_captureFee##`, `##payment_currencyCode##`, `##payment_refundTime##`, `##payment_refundAmount##`, `##payment_refundFee##`, `##payment_details##`, `##payment_notes##` |
+| Insert-Tags und Simple Tokens kombinieren                                  | `format_date`, usw.          | Simple Tokens lassen sich mit Insert-Tags kombinieren. -> `{{format_date::##member_dateOfBirth##::d.m.Y}}`, `{{format_date::##event_startDate##::d.m.Y}}`, usw.                                                                                                                                                                                                                                                                                                                                         |
+
+Beachten Sie, dass die Simple-Tokens zur Order und zur Zahlung nur bei einem Zahlungs-Checkout Werte enthalten.
 
 #### Benachrichtigung (Beispiel: Benachrichtigung nach erfolgreicher Zahlung)
 
@@ -177,10 +181,10 @@ Geburtsdatum: {{format_date::##member_dateOfBirth##::d.m.Y}}
 
 Stornierung erlauben: {if event_enableDeregistration=='1'}Ja{else}Nein{endif}
 
-{if payment_method!=''}
+{if order_provider!=''}
 Ihre Bezahlung:
-Bezahldienstleister: ##payment_method##
-Total: ##payment_grossAmount## ##payment_currencyCode##
+Bezahldienstleister: ##order_provider##
+Total: ##order_grossAmount## ##order_currencyCode##
 {endif}
 
 {if member_waitingList=='1'}
@@ -217,24 +221,24 @@ Falls nicht vorhanden, muss diese zuerst erstellt werden.
 ```yaml
 # config/config.yaml
 markocupic_calendar_event_booking:
-  auto_expire_reserved_bookings: true
-  auto_expire_time_limit: 3600
-  auto_delete_expired_bookings: false
-  auto_delete_canceled_bookings: false
-  auto_waiting_list_promotion: true
-  notification:
-    log:
-      exclude: [ html,text ] # Um Platz in der Datenbank zu sparen, den Text der Nachrichten in tl_calendar_events_booking_notification nicht abspeichern
-  rate_limiter:
-    event_booking_form: # Gebrauch des Buchungsformulars begrenzen
-      enable: true
-      policy: 'fixed_window'
-      limit: 5
-      interval: '15 minutes'
-  member_list_export:
-    enable_output_conversion: false
-    convert_from: 'UTF-8'
-    convert_to: 'ISO-8859-1'
+    auto_expire_reserved_bookings: true
+    auto_expire_time_limit: 3600
+    auto_delete_expired_bookings: false
+    auto_delete_canceled_bookings: false
+    auto_waiting_list_promotion: true
+    notification:
+        log:
+            exclude: [ html,text ] # Um Platz in der Datenbank zu sparen, den Text der Nachrichten in tl_calendar_events_booking_notification nicht abspeichern
+    rate_limiter:
+        event_booking_form: # Gebrauch des Buchungsformulars begrenzen
+            enable: true
+            policy: 'fixed_window'
+            limit: 5
+            interval: '15 minutes'
+    member_list_export:
+        enable_output_conversion: false
+        convert_from: 'UTF-8'
+        convert_to: 'ISO-8859-1'
 ```
 
 | **Paramter**                                  | **Default**    | **Erklärung**                                                                                                                                                                       |

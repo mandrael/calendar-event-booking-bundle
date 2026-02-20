@@ -42,6 +42,22 @@
         <source>Delete booking with ID %s.</source>
         <target>Buchung mit ID %s löschen.</target>
       </trans-unit>
+      <trans-unit id="tl_calendar_events_member.notification.0">
+        <source>Notifications</source>
+        <target>Benachrichtigungen</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_member.notification.1">
+        <source>Display notificatios for booking with ID %s.</source>
+        <target>Benachrichtigungen für Buchung mit ID %s anzeigen.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_member.order.0">
+        <source>Order</source>
+        <target>Bestellauftrag</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar_events_member.order.1">
+        <source>Show the order for the booking ID %s.</source>
+        <target>Zeige den Bestellauftrag der Buchung mit ID %s an.</target>
+      </trans-unit>
       <trans-unit id="tl_calendar_events_member.show.0">
         <source>Show</source>
         <target>Anzeigen</target>
@@ -49,14 +65,6 @@
       <trans-unit id="tl_calendar_events_member.show.1">
         <source>Show booking with ID %s.</source>
         <target>Buchung mit ID %s anzeigen.</target>
-      </trans-unit>
-      <trans-unit id="tl_calendar_events_member.payment.0">
-        <source>Payments</source>
-        <target>Zahlungen</target>
-      </trans-unit>
-      <trans-unit id="tl_calendar_events_member.payment.1">
-        <source>Show payments for booking with ID %s.</source>
-        <target>Zeige Zahlungen für Buchung mit ID %s an.</target>
       </trans-unit>
       <trans-unit id="tl_calendar_events_member.salutation_male">
         <source>Mr</source>
