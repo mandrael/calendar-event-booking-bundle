@@ -29,8 +29,8 @@ class PaymentEvent extends Event
         private readonly CalendarEventsMemberModel $booking,
         private readonly CalendarEventsOrderModel $order,
         private readonly Collection $payments,
-        private readonly CheckoutHandlerInterface $checkoutHandler,
         private readonly Request $request,
+        private readonly CheckoutHandlerInterface|null $checkoutHandler = null,
     ) {
     }
 
