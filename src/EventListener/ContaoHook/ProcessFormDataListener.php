@@ -99,7 +99,7 @@ class ProcessFormDataListener
 
         $event = $bookingModuleInstance->getEvent();
 
-        $strText = \sprintf('New event booking ID %s for event "%s" and booking token %s.', $booking->id, $event->title);
+        $strText = \sprintf('New booking ID %s for event "%s".', $booking->id, $event->title);
 
         $this->contaoGeneralLogger?->info($strText);
     }
