@@ -60,23 +60,21 @@ class CalendarEvents
         $this->connection->update('tl_calendar_events', $arrSet, ['id' => $dc->id]);
     }
 
-    #[AsCallback(table: 'tl_calendar_events', target: 'list.sorting.child_record')]
-    public function listEvents(array $arrRow): string
+    #[AsCallback(table: 'tl_calendar_events', target: 'list.label.label')]
+    public function listEvents(array $arrRow, string $label, DataContainer $dc, array $labels): array
     {
-        $markup = (new \tl_calendar_events())->listEvents($arrRow);
-
         if ($arrRow['enableBookingForm']) {
             $booking = $this->framework->getAdapter(CalendarEventsModel::class)->findById($arrRow['id']);
             $bookingCount = $this->eventStatus->getBookingCount($booking, $this->connection);
             $counterMarkup = \sprintf(
-                '<span class="label-info">[%s %sx]</span>',
+                ' <span class="label-info">[%s %sx]</span>',
                 $this->translator->trans('MSC.bookings', [], 'contao_default'),
                 $bookingCount,
             );
-            $markup = str_replace('</div>', $counterMarkup.'</div>', $markup);
+            $labels[0] .= $counterMarkup;
         }
 
-        return $markup;
+        return $labels;
     }
 
     #[AsCallback(table: 'tl_calendar_events', target: 'fields.netPrice.load')]
