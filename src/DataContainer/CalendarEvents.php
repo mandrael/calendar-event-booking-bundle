@@ -14,7 +14,9 @@ declare(strict_types=1);
 
 namespace Markocupic\CalendarEventBookingBundle\DataContainer;
 
+use Contao\Calendar;
 use Contao\CalendarEventsModel;
+use Contao\Config;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\DataContainer;
@@ -60,17 +62,40 @@ class CalendarEvents
         $this->connection->update('tl_calendar_events', $arrSet, ['id' => $dc->id]);
     }
 
+    /**
+     * Replace the default label callback with a custom one.
+     */
     #[AsCallback(table: 'tl_calendar_events', target: 'list.label.label')]
-    public function listEvents(array $arrRow, string $label, DataContainer $dc, array $labels): array
+    public function appendBookingsToLabel(array $arrRow, string $label, DataContainer $dc, array $labels): array
     {
+        // ----- This snippet was taken from the original list.label.label callback ----
+        // ----- See: tl_calendar_events::listEvents()
+        $span = Calendar::calculateSpan($arrRow['startTime'], $arrRow['endTime']);
+
+        if ($span > 0) {
+            $date = Date::parse(Config::get($arrRow['addTime'] ? 'datimFormat' : 'dateFormat'), $arrRow['startTime']).$GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'].Date::parse(Config::get($arrRow['addTime'] ? 'datimFormat' : 'dateFormat'), $arrRow['endTime']);
+        } elseif ($arrRow['startTime'] === $arrRow['endTime']) {
+            $date = Date::parse(Config::get('dateFormat'), $arrRow['startTime']).($arrRow['addTime'] ? ' '.Date::parse(Config::get('timeFormat'), $arrRow['startTime']) : '');
+        } else {
+            $date = Date::parse(Config::get('dateFormat'), $arrRow['startTime']).($arrRow['addTime'] ? ' '.Date::parse(Config::get('timeFormat'), $arrRow['startTime']).$GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'].Date::parse(Config::get('timeFormat'), $arrRow['endTime']) : '');
+        }
+        // ----- End! -----
+
+        $labels[0] .= ' <span class="label-info">['.$date.']</span>';
+
         if ($arrRow['enableBookingForm']) {
-            $booking = $this->framework->getAdapter(CalendarEventsModel::class)->findById($arrRow['id']);
-            $bookingCount = $this->eventStatus->getBookingCount($booking, $this->connection);
+            $event = $this->framework->getAdapter(CalendarEventsModel::class)?->findById($arrRow['id']);
+
+            if (null === $event) {
+                return $labels;
+            }
+
             $counterMarkup = \sprintf(
                 ' <span class="label-info">[%s %sx]</span>',
                 $this->translator->trans('MSC.bookings', [], 'contao_default'),
-                $bookingCount,
+                $this->eventStatus->getBookingCount($event, $this->connection),
             );
+
             $labels[0] .= $counterMarkup;
         }
 
