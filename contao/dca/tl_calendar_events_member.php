@@ -70,7 +70,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_member'] = [
                 'label'      => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['delete'],
                 'href'       => 'act=delete',
                 'icon'       => 'delete.svg',
-                'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null).'\'))return false" data-action="contao--scroll-offset#store"',
+                'attributes' => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false" data-action="contao--scroll-offset#store"',
             ],
             'order'        => [
                 'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['order'],
@@ -290,12 +290,11 @@ $GLOBALS['TL_DCA']['tl_calendar_events_member'] = [
             'sql'       => "mediumtext NOT NULL default ''",
         ],
         'notes'             => [
-            'default'   => null,
             'eval'      => ['tl_class' => 'w50', 'mandatory' => false],
             'exclude'   => true,
             'inputType' => 'textarea',
             'search'    => true,
-            'sql'       => "mediumtext NOT NULL default ''",
+            'sql'       => 'mediumtext NULL',
         ],
         'checkoutHandler'   => [
             'eval'      => ['readonly' => true, 'doNotCopy' => true, 'maxlength' => MySQLPlatform::LENGTH_LIMIT_TINYTEXT, 'tl_class' => 'w50'],
