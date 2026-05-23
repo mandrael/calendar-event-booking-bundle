@@ -61,7 +61,7 @@ class EventBookingFormController extends AbstractFrontendModuleController
 
     private CalendarModel|null $calendar = null;
 
-    private CalendarEventsModel|null $event = null;
+    private CalendarEventsModel|null $calEvent = null;
 
     private FormModel|null $form = null;
 
@@ -87,9 +87,9 @@ class EventBookingFormController extends AbstractFrontendModuleController
     public function __invoke(Request $request, ModuleModel $model, string $section, array|null $classes = null, PageModel|null $page = null): Response
     {
         if ($page instanceof PageModel && $this->scopeMatcher->isFrontendRequest($request)) {
-            $this->event = $this->eventUrlResolver->resolve();
+            $this->calEvent = $this->eventUrlResolver->resolve();
 
-            if (null === $this->event || !$this->event->published || !$this->event->enableBookingForm || null === ($this->calendar = $this->event->getRelated('pid'))) {
+            if (null === $this->calEvent || !$this->calEvent->published || !$this->calEvent->enableBookingForm || null === ($this->calendar = $this->calEvent->getRelated('pid'))) {
                 return new Response('', Response::HTTP_NO_CONTENT);
             }
         }
@@ -105,7 +105,7 @@ class EventBookingFormController extends AbstractFrontendModuleController
 
     public function getEvent(): CalendarEventsModel|null
     {
-        return $this->event;
+        return $this->calEvent;
     }
 
     public function getForm(): FormModel|null
@@ -138,19 +138,19 @@ class EventBookingFormController extends AbstractFrontendModuleController
 
         $this->getContaoAdapter(System::class)->loadLanguageFile(CalendarEventsMemberModel::getTable());
 
-        $this->eventStatus = $this->eventStatusHelper->resolveEventStatus($this->event, $request);
+        $this->eventStatus = $this->eventStatusHelper->resolveEventStatus($this->calEvent, $request);
 
         $formId = $event->getOptions()['formId'] ?? -1;
 
         $this->form = $this->getContaoAdapter(FormModel::class)->findById($formId);
 
-        if (!$this->eventStatusHelper->canRegister($this->event, $request) && $this->getFormId($formId)) {
+        if (!$this->eventStatusHelper->canRegister($this->calEvent, $request) && $this->getFormId($formId)) {
             $this->addTemplateData($template, $request);
 
             return $template->getResponse();
         }
 
-        if ($this->eventStatusHelper->isFullyBooked($this->event, $this->connection) && !$this->eventStatusHelper->isWaitingListFull($this->event, $this->connection)) {
+        if ($this->eventStatusHelper->isFullyBooked($this->calEvent, $this->connection) && !$this->eventStatusHelper->isWaitingListFull($this->calEvent, $this->connection)) {
             $this->waitingListOpen = true;
             // Show the waitingList checkbox if the waiting list is available
             $this->setFormFieldVisibility($formId, 'waitingList', true);
@@ -169,8 +169,8 @@ class EventBookingFormController extends AbstractFrontendModuleController
                 // Get the ticket amount from POST (default: 1)
                 $requestedTicketAmount = (int) $request->request->get('ticketAmount', 1);
 
-                if (!$this->eventStatusHelper->canFulfillBookingRequest($this->event, $this->connection, $requestedTicketAmount)) {
-                    if ($this->eventStatusHelper->canFulfillBookingRequestWaitingList($this->event, $this->connection, $requestedTicketAmount)) {
+                if (!$this->eventStatusHelper->canFulfillBookingRequest($this->calEvent, $this->connection, $requestedTicketAmount)) {
+                    if ($this->eventStatusHelper->canFulfillBookingRequestWaitingList($this->calEvent, $this->connection, $requestedTicketAmount)) {
                         $this->waitingListOpen = true;
                     }
                 }
@@ -247,14 +247,14 @@ class EventBookingFormController extends AbstractFrontendModuleController
         $template->set('eventStatus', $this->eventStatus);
 
         $template->set('eventStatusText', match ($this->eventStatus) {
-            EventStatus::NOT_YET_BOOKABLE => $this->translator->trans('MSC.'.$this->eventStatus, [$this->getContaoAdapter(Date::class)->parse($this->getContaoAdapter(Config::class)->get('datimFormat'), $this->event->bookingStartDate)], 'contao_default'),
+            EventStatus::NOT_YET_BOOKABLE => $this->translator->trans('MSC.'.$this->eventStatus, [$this->getContaoAdapter(Date::class)->parse($this->getContaoAdapter(Config::class)->get('datimFormat'), $this->calEvent->bookingStartDate)], 'contao_default'),
             default => $this->translator->trans('MSC.'.$this->eventStatus, [], 'contao_default'),
         });
 
         $template->set('waitingListOpen', $this->waitingListOpen);
         $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
         $template->set('messages', $this->message->hasMessages() ? $this->message->getAll() : null);
-        $this->addTemplateData->addTemplateData($template, $this->event, $request);
+        $this->addTemplateData->addTemplateData($template, $this->calEvent, $request);
     }
 
     private function checkRateLimit(Request $request): void

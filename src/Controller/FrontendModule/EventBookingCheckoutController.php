@@ -40,7 +40,7 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
 
     public const TYPE = 'event_booking_checkout';
 
-    private CalendarEventsModel|null $event = null;
+    private CalendarEventsModel|null $calEvent = null;
 
     private CalendarModel|null $calendar = null;
 
@@ -94,15 +94,15 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
 
         $template->set('checkout', $checkoutResult);
         $template->set('booking', $this->booking);
-        $template->set('event', $this->event);
-        $template->set('calendar', $this->event->getRelated('pid')->current());
+        $template->set('event', $this->calEvent);
+        $template->set('calendar', $this->calEvent->getRelated('pid')->current());
 
         // Add messages to template
         $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
         $template->set('messages', $this->message->getAll());
 
-        if ($model->ceb_addImage && $this->event->addImage) {
-            $figure = $this->figureUtil->buildFigure($this->event->row());
+        if ($model->ceb_addImage && $this->calEvent->addImage) {
+            $figure = $this->figureUtil->buildFigure($this->calEvent->row());
 
             if (null !== $figure) {
                 $template->set('addImage', true);
@@ -142,10 +142,10 @@ class EventBookingCheckoutController extends AbstractFrontendModuleController
         }
 
         $this->booking = $this->getBookingFromRequest($request);
-        $this->event = $this->booking?->getRelated('pid');
-        $this->calendar = $this->event?->getRelated('pid');
+        $this->calEvent = $this->booking?->getRelated('pid');
+        $this->calendar = $this->calEvent?->getRelated('pid');
 
-        if (null === $this->booking || null === $this->event || !$this->event->published || null === $this->calendar) {
+        if (null === $this->booking || null === $this->calEvent || !$this->calEvent->published || null === $this->calendar) {
             return false;
         }
 

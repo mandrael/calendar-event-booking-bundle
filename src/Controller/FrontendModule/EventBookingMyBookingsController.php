@@ -82,17 +82,17 @@ class EventBookingMyBookingsController extends AbstractFrontendModuleController
 
         foreach ($bookings as $rowBooking) {
             $booking = $this->getContaoAdapter(CalendarEventsMemberModel::class)->findById($rowBooking['id']);
-            $event = $booking->getRelated('pid');
-            $calendar = $event?->getRelated('pid');
+            $calEvent = $booking->getRelated('pid');
+            $calendar = $calEvent?->getRelated('pid');
             $payments = $this->getContaoAdapter(CalendarEventsPaymentModel::class)->findByPid($rowBooking['id']);
 
-            if ($model->ceb_addImage && $event->addImage) {
-                $figure = $this->figureUtil->buildFigure($event->row());
+            if ($model->ceb_addImage && $calEvent->addImage) {
+                $figure = $this->figureUtil->buildFigure($calEvent->row());
             }
 
             $row = [
                 'booking' => $booking,
-                'event' => $event,
+                'event' => $calEvent,
                 'calendar' => $calendar,
                 'payments' => $payments,
                 'figure' => $figure ?? null,

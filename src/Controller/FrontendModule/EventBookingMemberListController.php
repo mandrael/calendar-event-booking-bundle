@@ -36,7 +36,7 @@ class EventBookingMemberListController extends AbstractFrontendModuleController
 {
     public const TYPE = 'event_booking_member_list';
 
-    private CalendarEventsModel|null $event = null;
+    private CalendarEventsModel|null $calEvent = null;
 
     public function __construct(
         private readonly Connection $connection,
@@ -51,12 +51,12 @@ class EventBookingMemberListController extends AbstractFrontendModuleController
         if ($page instanceof PageModel && $this->scopeMatcher->isFrontendRequest($request)) {
             $showEmpty = true;
 
-            $this->event = $this->eventUrlResolver->resolve();
+            $this->calEvent = $this->eventUrlResolver->resolve();
 
-            // Get the current event && return empty string if enableBookingForm isn't set,
-            // or the event is not published
-            if (null !== $this->event) {
-                if ($this->event->enableBookingForm && $this->event->published) {
+            // Get the current event && return empty string
+            // if enableBookingForm isn't set, or the event is not published
+            if (null !== $this->calEvent) {
+                if ($this->calEvent->enableBookingForm && $this->calEvent->published) {
                     $showEmpty = false;
                 }
             }
@@ -89,7 +89,7 @@ class EventBookingMemberListController extends AbstractFrontendModuleController
         $arrOrder = StringUtil::deserialize($model->ceb_modMemberList_sorting, true);
         $arrOrder = empty($arrOrder) ? ['dateAdded::DESC'] : $arrOrder;
 
-        $rows = $this->getBookings($this->event->id, $arrWhere, $arrOrder);
+        $rows = $this->getBookings($this->calEvent->id, $arrWhere, $arrOrder);
         $rowCount = \count($rows);
 
         $i = 0;
@@ -105,11 +105,11 @@ class EventBookingMemberListController extends AbstractFrontendModuleController
         $template->set('bookings', $bookings);
 
         // Add the event model to the parent template
-        $template->set('event', $this->event);
-        $template->set('calendar', $this->event->getRelated('pid'));
+        $template->set('event', $this->calEvent);
+        $template->set('calendar', $this->calEvent->getRelated('pid'));
 
-        if ($model->ceb_addImage && $this->event->addImage) {
-            $figure = $this->figureUtil->buildFigure($this->event->row());
+        if ($model->ceb_addImage && $this->calEvent->addImage) {
+            $figure = $this->figureUtil->buildFigure($this->calEvent->row());
 
             if (null !== $figure) {
                 $template->set('addImage', true);

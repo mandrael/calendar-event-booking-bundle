@@ -84,12 +84,12 @@ class EventBookingOptInController extends AbstractFrontendModuleController
         }
 
         $booking = $this->loadBookingFromOptInModel($optInModel);
-        $event = $booking?->getRelated('pid');
+        $calEvent = $booking?->getRelated('pid');
 
-        $this->processOptInConfirmation($template, $optInModel, $token, $request, $booking, $event);
+        $this->processOptInConfirmation($template, $optInModel, $token, $request, $booking, $calEvent);
 
         // Add image to template
-        $this->addEventImageToTemplate($template, $model, $event);
+        $this->addEventImageToTemplate($template, $model, $calEvent);
 
         // Peek messages and wrap them in a <p> tag.
         $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
@@ -98,10 +98,10 @@ class EventBookingOptInController extends AbstractFrontendModuleController
         return $template->getResponse();
     }
 
-    private function processOptInConfirmation(FragmentTemplate $template, OptInModel $optInModel, string $token, Request $request, CalendarEventsMemberModel|null $booking, CalendarEventsModel|null $event): void
+    private function processOptInConfirmation(FragmentTemplate $template, OptInModel $optInModel, string $token, Request $request, CalendarEventsMemberModel|null $booking, CalendarEventsModel|null $calEvent): void
     {
         /** @var CalendarModel|null $calendar */
-        $calendar = $event?->getRelated('pid');
+        $calendar = $calEvent?->getRelated('pid');
 
         $lock = $this->lockFactory->createLock(base64_encode(self::class.$token));
         $lock->acquire(true);
@@ -109,16 +109,16 @@ class EventBookingOptInController extends AbstractFrontendModuleController
         try {
             $this->connection->beginTransaction();
 
-            $this->validateRelatedEntities($template, $booking, $event, $calendar);
+            $this->validateRelatedEntities($template, $booking, $calEvent, $calendar);
 
-            $this->validateBookingState($template, $calendar, $event, $booking);
+            $this->validateBookingState($template, $calendar, $calEvent, $booking);
 
             $optInToken = new OptInToken($optInModel, $this->framework);
 
             // Will throw an exception if the token is already confirmed or no longer valid.
             $optInToken->confirm();
 
-            if ($this->processConfirm($template, $event, $booking, $request)) {
+            if ($this->processConfirm($template, $calEvent, $booking, $request)) {
                 $request->attributes->set('_calendar_event_booking_token', $booking->bookingToken);
 
                 if ($calendar->optInSuccessNotification) {
@@ -153,13 +153,13 @@ class EventBookingOptInController extends AbstractFrontendModuleController
         }
     }
 
-    private function addEventImageToTemplate(FragmentTemplate $template, ModuleModel $model, CalendarEventsModel|null $event): void
+    private function addEventImageToTemplate(FragmentTemplate $template, ModuleModel $model, CalendarEventsModel|null $calEvent): void
     {
-        if (null === $event || !$model->ceb_addImage || !$event->addImage) {
+        if (null === $calEvent || !$model->ceb_addImage || !$calEvent->addImage) {
             return;
         }
 
-        $figure = $this->figureUtil->buildFigure($event->row());
+        $figure = $this->figureUtil->buildFigure($calEvent->row());
 
         if (null !== $figure) {
             $template->set('addImage', true);
@@ -167,7 +167,7 @@ class EventBookingOptInController extends AbstractFrontendModuleController
         }
     }
 
-    private function processConfirm(FragmentTemplate $template, CalendarEventsModel $calendarEvent, CalendarEventsMemberModel $booking, Request $request): bool
+    private function processConfirm(FragmentTemplate $template, CalendarEventsModel $calEvent, CalendarEventsMemberModel $booking, Request $request): bool
     {
         $booking->optIn = true;
         $booking->temporaryReserved = false;
@@ -180,12 +180,12 @@ class EventBookingOptInController extends AbstractFrontendModuleController
         $event = new BookingConfirmEvent($booking, self::class, $request);
         $this->eventDispatcher->dispatch($event);
 
-        $this->contaoGeneralLogger?->info(\sprintf('Booking for "%s" ID: %d confirmed via link.', $calendarEvent->title, $booking->id));
+        $this->contaoGeneralLogger?->info(\sprintf('Booking for "%s" ID: %d confirmed via link.', $calEvent->title, $booking->id));
 
         return true;
     }
 
-    private function validateRelatedEntities(FragmentTemplate $template, CalendarEventsMemberModel|null $booking, CalendarEventsModel|null $event, CalendarModel|null $calendar): void
+    private function validateRelatedEntities(FragmentTemplate $template, CalendarEventsMemberModel|null $booking, CalendarEventsModel|null $calEvent, CalendarModel|null $calendar): void
     {
         if (null === $booking) {
             $this->addCssClassToTemplate('error booking-not-found', $template);
@@ -193,7 +193,7 @@ class EventBookingOptInController extends AbstractFrontendModuleController
             throw new EventBookingOptInException('Booking not found.', SeverityLevel::ERROR, 'mod_opt_in.error.booking_not_found', [], self::TRANS_DOMAIN);
         }
 
-        if (null === $event) {
+        if (null === $calEvent) {
             $this->addCssClassToTemplate('error event-not-found', $template);
 
             throw new EventBookingOptInException('Event not found.', SeverityLevel::ERROR, 'mod_opt_in.error.corresponding_event_not_found', [], self::TRANS_DOMAIN);
@@ -206,7 +206,7 @@ class EventBookingOptInController extends AbstractFrontendModuleController
         }
     }
 
-    private function validateBookingState(FragmentTemplate $template, CalendarModel $calendar, CalendarEventsModel $calendarEvent, CalendarEventsMemberModel $booking): void
+    private function validateBookingState(FragmentTemplate $template, CalendarModel $calendar, CalendarEventsModel $calEvent, CalendarEventsMemberModel $booking): void
     {
         if ($booking->canceled) {
             $this->throwValidationException($template, 'error booking-canceled', 'alreadyCanceled', SeverityLevel::ERROR, 'mod_opt_in.error.booking_canceled', 'Booking canceled.');
@@ -224,11 +224,11 @@ class EventBookingOptInController extends AbstractFrontendModuleController
             $this->throwValidationException($template, 'error confirm-expired', 'confirmExpired', SeverityLevel::ERROR, 'mod_opt_in.error.confirm_expired', 'Booking already expired.');
         }
 
-        if (!empty($calendarEvent->startDate) && time() > $calendarEvent->startDate) {
+        if (!empty($calEvent->startDate) && time() > $calEvent->startDate) {
             $this->throwValidationException($template, 'error confirm-no-more-possible', 'cannotConfirm', SeverityLevel::ERROR, 'mod_opt_in.error.confirm_no_more_possible', 'Confirm no more possible.');
         }
 
-        if (!empty($calendarEvent->bookingEndDate) && time() > $calendarEvent->bookingEndDate) {
+        if (!empty($calEvent->bookingEndDate) && time() > $calEvent->bookingEndDate) {
             $this->throwValidationException($template, 'error confirm-no-more-possible', 'cannotConfirm', SeverityLevel::ERROR, 'mod_opt_in.error.confirm_no_more_possible', 'Confirm no more possible.');
         }
     }
