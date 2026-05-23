@@ -56,22 +56,9 @@ $GLOBALS['TL_DCA']['tl_calendar_events_member'] = [
             ],
         ],
         'operations'        => [
-            'edit'         => [
-                'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['edit'],
-                'href'  => 'act=edit',
-                'icon'  => 'edit.svg',
-            ],
-            'copy'         => [
-                'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['copy'],
-                'href'  => 'act=copy',
-                'icon'  => 'copy.svg',
-            ],
-            'delete'       => [
-                'label'      => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['delete'],
-                'href'       => 'act=delete',
-                'icon'       => 'delete.svg',
-                'attributes' => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false" data-action="contao--scroll-offset#store"',
-            ],
+            'edit',
+            'copy',
+            'delete',
             'order'        => [
                 'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['order'],
                 'href'  => 'do=calendar&table=tl_calendar_events_order',
@@ -82,11 +69,7 @@ $GLOBALS['TL_DCA']['tl_calendar_events_member'] = [
                 'href'  => 'do=calendar&table=tl_calendar_events_booking_notification',
                 'icon'  => 'bundles/markocupiccalendareventbooking/icons/mail.svg',
             ],
-            'show'         => [
-                'label' => &$GLOBALS['TL_LANG']['tl_calendar_events_member']['show'],
-                'href'  => 'act=show',
-                'icon'  => 'show.svg',
-            ],
+            'show',
         ],
     ],
     'palettes' => [
