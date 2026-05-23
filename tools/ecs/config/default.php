@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 
 use Contao\EasyCodingStandard\Set\SetList;
+use Contao\EasyCodingStandard\Fixer\CommentLengthFixer;
 use PhpCsFixer\Fixer\Comment\HeaderCommentFixer;
 use PhpCsFixer\Fixer\Whitespace\MethodChainingIndentationFixer;
 use SlevomatCodingStandard\Sniffs\Variables\UnusedVariableSniff;
@@ -32,6 +33,8 @@ return ECSConfig::configure()
         __DIR__.'/../../../templates',
         __DIR__.'/../../../tools',
         __DIR__.'/../../../translations',
+
+        CommentLengthFixer::class,
         MethodChainingIndentationFixer::class => [
             '*/DependencyInjection/Configuration.php',
         ],
