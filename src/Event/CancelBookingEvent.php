@@ -16,10 +16,13 @@ namespace Markocupic\CalendarEventBookingBundle\Event;
 
 use Markocupic\CalendarEventBookingBundle\Model\CalendarEventsMemberModel;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class CancelBookingEvent extends Event
 {
+    private Response|null $response = null;
+
     public function __construct(
         private readonly CalendarEventsMemberModel $booking,
         private readonly string $context,
@@ -40,5 +43,16 @@ class CancelBookingEvent extends Event
     public function getBooking(): CalendarEventsMemberModel
     {
         return $this->booking;
+    }
+
+    public function setResponse(Response|null $response): void
+    {
+        $this->response = $response;
+        $this->stopPropagation();
+    }
+
+    public function getResponse(): Response|null
+    {
+        return $this->response;
     }
 }
