@@ -16,11 +16,9 @@ namespace Markocupic\CalendarEventBookingBundle\Controller\FrontendModule;
 
 use Codefog\HasteBundle\UrlParser;
 use Contao\CalendarEventsModel;
-use Contao\Controller;
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
-use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\ModuleModel;
@@ -36,6 +34,7 @@ use Markocupic\ContaoFlashMessage\FlashMessage\MessageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Lock\LockFactory;
@@ -79,17 +78,19 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
 
     public function __invoke(Request $request, ModuleModel $model, string $section, array|null $classes = null, PageModel|null $page = null): Response
     {
-        if (!$page instanceof PageModel || !$this->scopeMatcher->isFrontendRequest($request)) {
+        if ($this->scopeMatcher->isBackendRequest($request)) {
             return parent::__invoke($request, $model, $section, $classes);
         }
 
-        $page->noSearch = 1;
+        if (null !== $page) {
+            $page->noSearch = 1;
+        }
 
         if (self::ACTION !== $request->query->get(self::QUERY_PARAM_ACTION)) {
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 
-        $bookingToken = $request->query->get(self::QUERY_PARAM_BOOKING_TOKEN, null);
+        $bookingToken = $request->query->get(self::QUERY_PARAM_BOOKING_TOKEN, '');
 
         if (empty($bookingToken)) {
             return new Response('', Response::HTTP_NO_CONTENT);
@@ -98,23 +99,17 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
         return parent::__invoke($request, $model, $section, $classes);
     }
 
-    /**
-     * @throws \Exception
-     */
     protected function getResponse(FragmentTemplate $template, ModuleModel $model, Request $request): Response
     {
-        $uuid = $request->query->get(self::QUERY_PARAM_BOOKING_TOKEN, false);
-
-        $lock = $this->lockFactory->createLock(base64_encode(self::class.$uuid));
-        $lock->acquire(true);
-
-        $this->connection->beginTransaction();
+        $bookingToken = $request->query->get(self::QUERY_PARAM_BOOKING_TOKEN, '');
+        $booking = CalendarEventsMemberModel::findOneByBookingToken($bookingToken);
 
         $calEvent = null;
+        $isValid = false;
 
+        // Validate the request
+        // Each test will throw an EventBookingUnsubscribeException if validation fails
         try {
-            $booking = CalendarEventsMemberModel::findOneByBookingToken($uuid);
-
             if (null === $booking) {
                 $this->addCssClassToTemplate('error booking-not-found', $template);
 
@@ -157,7 +152,20 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
                 throw new EventBookingUnsubscribeException('Unsubscription limit has expired.', $this->translator->trans('mod_unsubscribe.error.unsubscription_limit_expired', ['%title%' => $calEvent->title], self::TRANS_DOMAIN), SeverityLevel::ERROR);
             }
 
-            if (self::FORM_ID === $request->request->get('FORM_SUBMIT')) {
+            $isValid = true;
+            $template->set('hasForm', true);
+            $template->set('formId', self::FORM_ID);
+            $template->set('requestToken', $this->csrfTokenManager->getDefaultTokenValue());
+        } catch (EventBookingUnsubscribeException $e) {
+            $this->message->add($e->getTranslatableText(), $e->getSeverityLevel());
+        }
+
+        if ($isValid && self::FORM_ID === $request->request->get('FORM_SUBMIT')) {
+            $this->connection->beginTransaction();
+            $lock = $this->lockFactory->createLock(base64_encode(self::class.$bookingToken));
+            $lock->acquire(true);
+
+            try {
                 $this->processUnsubscription($booking, $calEvent, $request);
                 $this->connection->commit();
 
@@ -171,37 +179,18 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
                     return $event->getResponse();
                 }
 
-                $redirectUrl = $this->urlParser->addQueryString(self::QUERY_PARAM_UNSUBSCRIBED.'=true');
-                $this->getContaoAdapter(Controller::class)->redirect($redirectUrl);
-            }
+                $url = $this->urlParser->addQueryString(self::QUERY_PARAM_UNSUBSCRIBED.'=true');
 
-            $template->set('hasForm', true);
-            $template->set('formId', 'tl_unsubscribe_from_event');
-            $template->set('requestToken', $this->csrfTokenManager->getDefaultTokenValue());
-
-            $this->connection->commit();
-        } catch (EventBookingUnsubscribeException $e) {
-            if ($this->connection->isTransactionActive()) {
+                return new RedirectResponse($url);
+            } catch (\Throwable $e) {
                 $this->connection->rollBack();
-            }
 
-            $this->message->add($e->getTranslatableText(), $e->getSeverityLevel());
-        } catch (RedirectResponseException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            if ($this->connection->isTransactionActive()) {
-                $this->connection->rollBack();
+                $this->message->addError($this->translator->trans('mod_unsubscribe.error.unexpected_error', [], self::TRANS_DOMAIN));
+                $this->contaoErrorLogger?->error($e->getMessage());
+            } finally {
+                $lock->release();
             }
-
-            $this->message->addError($this->translator->trans('mod_unsubscribe.error.unexpected_error', [], self::TRANS_DOMAIN));
-            $this->contaoErrorLogger?->error($e->getMessage());
-        } finally {
-            $lock->release();
         }
-
-        // Add messages to template
-        $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
-        $template->set('messages', $this->message->hasMessages() ? $this->message->getAll() : null);
 
         if ($model->ceb_addImage && null !== $calEvent && $calEvent->addImage) {
             $figure = $this->figureUtil->buildFigure($calEvent->row());
@@ -211,6 +200,10 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
                 $template->set('figure', $figure);
             }
         }
+
+        // Add messages to template
+        $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
+        $template->set('messages', $this->message->hasMessages() ? $this->message->getAll() : null);
 
         return $template->getResponse();
     }
@@ -250,10 +243,7 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
     {
         $booking->canceled = true;
         $booking->temporaryReserved = false;
-
-        if (false === $booking->save()) {
-            throw new EventBookingUnsubscribeException('Could not process unsubscription due to a database error.', 'Could not process unsubscription due to a database error.', SeverityLevel::ERROR);
-        }
+        $booking->save();
 
         $request->attributes->set('_calendar_event_booking_token', $booking->bookingToken);
 
@@ -262,7 +252,7 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
 
     private function addCssClassToTemplate(string $cssClass, FragmentTemplate $template): void
     {
-        $classes = $template->get('element_css_classes').' '.$cssClass;
+        $classes = (string) $template->get('element_css_classes').' '.$cssClass;
         $template->set('element_css_classes', implode(' ', array_filter(explode(' ', $classes))));
     }
 }
