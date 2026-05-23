@@ -103,55 +103,11 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
     {
         $bookingToken = $request->query->get(self::QUERY_PARAM_BOOKING_TOKEN, '');
         $booking = CalendarEventsMemberModel::findOneByBookingToken($bookingToken);
-
         $calEvent = null;
         $isValid = false;
 
-        // Validate the request
-        // Each test will throw an EventBookingUnsubscribeException if validation fails
         try {
-            if (null === $booking) {
-                $this->addCssClassToTemplate('error booking-not-found', $template);
-
-                throw new EventBookingUnsubscribeException('Booking not found.', $this->translator->trans('mod_unsubscribe.error.invalid_uuid', [], self::TRANS_DOMAIN), SeverityLevel::ERROR);
-            }
-
-            $template->set('booking', $booking);
-
-            $calEvent = $booking->getRelated('pid');
-
-            if (!$calEvent instanceof CalendarEventsModel) {
-                $this->addCssClassToTemplate('error event-not-found', $template);
-
-                throw new EventBookingUnsubscribeException('Event not found.', $this->translator->trans('mod_unsubscribe.error.event_not_found', [], self::TRANS_DOMAIN), SeverityLevel::ERROR);
-            }
-
-            $template->set('event', $calEvent);
-            $template->set('calendar', $calEvent->getRelated('pid'));
-
-            if ($booking->canceled) {
-                $template->set('hasUnsubscribed', true);
-                $this->addCssClassToTemplate('info booking-already-canceled', $template);
-
-                if ('true' === $request->query->get(self::QUERY_PARAM_UNSUBSCRIBED)) {
-                    throw new EventBookingUnsubscribeException('You have unsubscribed.', $this->translator->trans('mod_unsubscribe.info.unsubscribe_success', ['%title%' => $calEvent->title], self::TRANS_DOMAIN), SeverityLevel::INFO);
-                }
-
-                throw new EventBookingUnsubscribeException('You have unsubscribed.', $this->translator->trans('mod_unsubscribe.info.already_unsubscribed', ['%title%' => $calEvent->title], self::TRANS_DOMAIN), SeverityLevel::INFO);
-            }
-
-            if (!$calEvent->enableDeregistration) {
-                $this->addCssClassToTemplate('error unsubscription-not-allowed', $template);
-
-                throw new EventBookingUnsubscribeException('Unsubscription not allowed.', $this->translator->trans('mod_unsubscribe.error.unsubscription_not_allowed', ['%title%' => $calEvent->title], self::TRANS_DOMAIN), SeverityLevel::ERROR);
-            }
-
-            if ($this->isUnsubscriptionLimitExpired($calEvent)) {
-                $this->addCssClassToTemplate('error unsubscription-limit-expired', $template);
-
-                throw new EventBookingUnsubscribeException('Unsubscription limit has expired.', $this->translator->trans('mod_unsubscribe.error.unsubscription_limit_expired', ['%title%' => $calEvent->title], self::TRANS_DOMAIN), SeverityLevel::ERROR);
-            }
-
+            $calEvent = $this->validateBooking($booking, $request, $template);
             $isValid = true;
             $template->set('hasForm', true);
             $template->set('formId', self::FORM_ID);
@@ -161,51 +117,122 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
         }
 
         if ($isValid && self::FORM_ID === $request->request->get('FORM_SUBMIT')) {
-            $this->connection->beginTransaction();
-            $lock = $this->lockFactory->createLock(base64_encode(self::class.$bookingToken));
-            $lock->acquire(true);
+            $response = $this->handleFormSubmission($booking, $calEvent, $request, $bookingToken);
 
-            try {
-                $this->processUnsubscription($booking, $calEvent, $request);
-                $this->connection->commit();
-
-                // Send notifications
-                $this->notify($booking, $calEvent);
-
-                $event = new CancelBookingEvent($booking, self::class, $request);
-                $this->eventDispatcher->dispatch($event);
-
-                if ($event->getResponse() instanceof Response) {
-                    return $event->getResponse();
-                }
-
-                $url = $this->urlParser->addQueryString(self::QUERY_PARAM_UNSUBSCRIBED.'=true');
-
-                return new RedirectResponse($url);
-            } catch (\Throwable $e) {
-                $this->connection->rollBack();
-
-                $this->message->addError($this->translator->trans('mod_unsubscribe.error.unexpected_error', [], self::TRANS_DOMAIN));
-                $this->contaoErrorLogger?->error($e->getMessage());
-            } finally {
-                $lock->release();
+            if ($response instanceof Response) {
+                return $response;
             }
         }
 
-        if ($model->ceb_addImage && null !== $calEvent && $calEvent->addImage) {
-            $figure = $this->figureUtil->buildFigure($calEvent->row());
+        $this->applyEventImage($model, $calEvent, $template);
 
-            if (null !== $figure) {
-                $template->set('addImage', true);
-                $template->set('figure', $figure);
-            }
-        }
-
-        // Add messages to template
         $template->set('messagesUnwrapped', $this->message->renderUnwrapped(peek: true));
         $template->set('messages', $this->message->hasMessages() ? $this->message->getAll() : null);
 
         return $template->getResponse();
+    }
+
+    /**
+     * Validates the booking and populates template data.
+     * Throws EventBookingUnsubscribeException on any validation failure.
+     */
+    private function validateBooking(CalendarEventsMemberModel|null $booking, Request $request, FragmentTemplate $template): CalendarEventsModel
+    {
+        if (null === $booking) {
+            $this->addCssClassToTemplate('error booking-not-found', $template);
+
+            throw new EventBookingUnsubscribeException('Booking not found.', $this->translator->trans('mod_unsubscribe.error.invalid_uuid', [], self::TRANS_DOMAIN), SeverityLevel::ERROR);
+        }
+
+        $template->set('booking', $booking);
+
+        $calEvent = $booking->getRelated('pid');
+
+        if (!$calEvent instanceof CalendarEventsModel) {
+            $this->addCssClassToTemplate('error event-not-found', $template);
+
+            throw new EventBookingUnsubscribeException('Event not found.', $this->translator->trans('mod_unsubscribe.error.event_not_found', [], self::TRANS_DOMAIN), SeverityLevel::ERROR);
+        }
+
+        $template->set('event', $calEvent);
+        $template->set('calendar', $calEvent->getRelated('pid'));
+
+        if ($booking->canceled) {
+            $template->set('hasUnsubscribed', true);
+            $this->addCssClassToTemplate('info booking-already-canceled', $template);
+
+            $transKey = 'true' === $request->query->get(self::QUERY_PARAM_UNSUBSCRIBED)
+                ? 'mod_unsubscribe.info.unsubscribe_success'
+                : 'mod_unsubscribe.info.already_unsubscribed';
+
+            throw new EventBookingUnsubscribeException('You have unsubscribed.', $this->translator->trans($transKey, ['%title%' => $calEvent->title], self::TRANS_DOMAIN), SeverityLevel::INFO);
+        }
+
+        if (!$calEvent->enableDeregistration) {
+            $this->addCssClassToTemplate('error unsubscription-not-allowed', $template);
+
+            throw new EventBookingUnsubscribeException('Unsubscription not allowed.', $this->translator->trans('mod_unsubscribe.error.unsubscription_not_allowed', ['%title%' => $calEvent->title], self::TRANS_DOMAIN), SeverityLevel::ERROR);
+        }
+
+        if ($this->isUnsubscriptionLimitExpired($calEvent)) {
+            $this->addCssClassToTemplate('error unsubscription-limit-expired', $template);
+
+            throw new EventBookingUnsubscribeException('Unsubscription limit has expired.', $this->translator->trans('mod_unsubscribe.error.unsubscription_limit_expired', ['%title%' => $calEvent->title], self::TRANS_DOMAIN), SeverityLevel::ERROR);
+        }
+
+        return $calEvent;
+    }
+
+    private function handleFormSubmission(CalendarEventsMemberModel $booking, CalendarEventsModel $calEvent, Request $request, string $bookingToken): Response|null
+    {
+        $this->connection->beginTransaction();
+        $lock = $this->lockFactory->createLock(base64_encode(self::class.$bookingToken));
+        $lock->acquire(true);
+
+        try {
+            $booking->canceled = true;
+            $booking->temporaryReserved = false;
+            $booking->save();
+            $this->connection->commit();
+
+            $request->attributes->set('_calendar_event_booking_token', $booking->bookingToken);
+
+            $this->contaoGeneralLogger?->info(\sprintf('Booking for event "%s" ID %d has been unsubscribed by link.', $calEvent->title, $booking->id));
+
+            // Send notifications
+            $this->notify($booking, $calEvent);
+
+            $event = new CancelBookingEvent($booking, self::class, $request);
+            $this->eventDispatcher->dispatch($event);
+
+            if ($event->getResponse() instanceof Response) {
+                return $event->getResponse();
+            }
+
+            return new RedirectResponse($this->urlParser->addQueryString(self::QUERY_PARAM_UNSUBSCRIBED.'=true'));
+        } catch (\Throwable $e) {
+            $this->connection->rollBack();
+            $this->message->addError($this->translator->trans('mod_unsubscribe.error.unexpected_error', [], self::TRANS_DOMAIN));
+            $this->contaoErrorLogger?->error($e->getMessage());
+
+            return null;
+        } finally {
+            $lock->release();
+        }
+    }
+
+    private function applyEventImage(ModuleModel $model, CalendarEventsModel|null $calEvent, FragmentTemplate $template): void
+    {
+        if (!$model->ceb_addImage || null === $calEvent || !$calEvent->addImage) {
+            return;
+        }
+
+        $figure = $this->figureUtil->buildFigure($calEvent->row());
+
+        if (null !== $figure) {
+            $template->set('addImage', true);
+            $template->set('figure', $figure);
+        }
     }
 
     /**
@@ -237,17 +264,6 @@ class EventBookingUnsubscribeController extends AbstractFrontendModuleController
         }
 
         return strtotime('today 00:00') + $limitTimestamp > $calEvent->startDate;
-    }
-
-    private function processUnsubscription(CalendarEventsMemberModel $booking, CalendarEventsModel $calendarEvent, Request $request): void
-    {
-        $booking->canceled = true;
-        $booking->temporaryReserved = false;
-        $booking->save();
-
-        $request->attributes->set('_calendar_event_booking_token', $booking->bookingToken);
-
-        $this->contaoGeneralLogger?->info(\sprintf('Booking for event "%s" ID %d has been unsubscribed by link.', $calendarEvent->title, $booking->id));
     }
 
     private function addCssClassToTemplate(string $cssClass, FragmentTemplate $template): void
