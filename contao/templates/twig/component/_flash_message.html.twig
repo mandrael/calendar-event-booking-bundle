@@ -2,7 +2,7 @@
     {% for type, message in messages %}
         {% for item in messages[type] %}
             <p class="tl_{{ type|lower }}">
-                {{ item }}
+                {{ item|default('')|sanitize_html('contao')|insert_tag_raw }}
             </p>
         {% endfor %}
     {% endfor %}
