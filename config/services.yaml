@@ -18,6 +18,7 @@ services:
         resource: ../src/
         exclude: [
             ../src/CheckoutHandler/CheckoutResult.php,
+            ../src/Domain/Unsubscribe/ValidationResult.php,
             ../src/DependencyInjection,
             ../src/Event,
             ../src/Exception,
