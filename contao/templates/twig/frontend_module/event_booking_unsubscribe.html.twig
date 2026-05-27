@@ -21,7 +21,7 @@
     {% block form %}
         {% if hasForm|default %}
             <div class="ceb-form--unsubscribe">
-                <form action="{{ app.request.getRequestUri() }}" id="{{ formId }}" method="post">
+                <form id="{{ formId }}" method="post">
                     <div class="formbody">
                         <input type="hidden" name="FORM_SUBMIT" value="{{ formId }}">
                         <input type="hidden" name="REQUEST_TOKEN" value="{{ requestToken }}">
