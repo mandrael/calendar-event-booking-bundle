@@ -158,8 +158,8 @@ $GLOBALS['TL_DCA']['tl_calendar_events']['fields']['maxBookings'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_calendar_events']['fields']['maxTicketsPerBooking'] = [
-    'default'   => 0,
-    'eval'      => ['tl_class' => 'w50', 'rgxp' => 'natural', 'mandatory' => true],
+    'default'   => 1,
+    'eval'      => ['tl_class' => 'w50', 'minval' => 1, 'rgxp' => 'natural', 'mandatory' => true],
     'exclude'   => true,
     'inputType' => 'text',
     'search'    => true,
